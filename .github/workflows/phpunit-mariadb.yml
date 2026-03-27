@@ -19,10 +19,10 @@ concurrency:
 
 jobs:
   matrix:
-    runs-on: ubuntu-latest-low
+    runs-on: ubuntu-latest
     outputs:
       php-version: ${{ steps.versions.outputs.php-available-list }}
-      server-max: ${{ steps.versions.outputs.branches-max-list }}
+      server-versions: ${{ steps.versions.outputs.branches }}
     steps:
       - name: Checkout app
         uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
@@ -34,7 +34,7 @@ jobs:
         uses: icewind1991/nextcloud-version-matrix@8a7bac6300b2f0f3100088b297995a229558ddba # v1.3.2.3.1.3.2
 
   changes:
-    runs-on: ubuntu-latest-low
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: read
@@ -69,7 +69,7 @@ jobs:
     strategy:
       matrix:
         php-versions: ${{ fromJson(needs.matrix.outputs.php-version) }}
-        server-versions: ${{ fromJson(needs.matrix.outputs.server-max) }}
+        server-versions: ${{ fromJson(needs.matrix.outputs.server-versions) }}
         mariadb-versions: ['10.6', '11.4']
 
     name: MariaDB ${{ matrix.mariadb-versions }} PHP ${{ matrix.php-versions }} Nextcloud ${{ matrix.server-versions }}
@@ -198,7 +198,7 @@ jobs:
   summary:
     permissions:
       contents: none
-    runs-on: ubuntu-latest-low
+    runs-on: ubuntu-latest
     needs: [changes, phpunit-mariadb]
 
     if: always()

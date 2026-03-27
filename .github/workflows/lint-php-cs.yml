@@ -18,11 +18,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  matrix:
     runs-on: ubuntu-latest
-
-    name: php-cs
-
+    outputs:
+      php-versions: ${{ steps.matrix.outputs.php-versions }}
     steps:
       - name: Checkout
         uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
@@ -33,10 +32,32 @@ jobs:
         id: versions
         uses: icewind1991/nextcloud-version-matrix@8a7bac6300b2f0f3100088b297995a229558ddba # v1.3.2.3.1.3.2
 
-      - name: Set up php${{ steps.versions.outputs.php-min }}
+      - name: Build php-cs matrix
+        id: matrix
+        run: |
+          php_versions=$(printf '%s\n' '${{ steps.versions.outputs.php-min }}' '8.2' '8.4' | sort -u | jq -R . | jq -sc .)
+          echo "php-versions=${php_versions}" >> $GITHUB_OUTPUT
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: matrix
+
+    strategy:
+      matrix:
+        php-versions: ${{ fromJson(needs.matrix.outputs.php-versions) }}
+
+    name: php-cs (PHP ${{ matrix.php-versions }})
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up php${{ matrix.php-versions }}
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2.36.0
         with:
-          php-version: ${{ steps.versions.outputs.php-min }}
+          php-version: ${{ matrix.php-versions }}
           extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, sqlite, pdo_sqlite
           coverage: none
           ini-file: development
