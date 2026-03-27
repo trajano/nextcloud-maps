@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   matrix:
-    runs-on: ubuntu-latest-low
+    runs-on: ubuntu-latest
     outputs:
       php-available: ${{ steps.versions.outputs.php-available }}
       php-min: ${{ steps.versions.outputs.php-min }}
