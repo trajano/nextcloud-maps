@@ -21,7 +21,7 @@ jobs:
   matrix:
     runs-on: ubuntu-latest
     outputs:
-      php-available: ${{ steps.versions.outputs.php-available }}
+      php-versions: ${{ steps.php.outputs.php-versions }}
       php-min: ${{ steps.versions.outputs.php-min }}
       server-versions: ${{ steps.branches.outputs.server-versions }}
     steps:
@@ -38,15 +38,22 @@ jobs:
         id: branches
         run: echo 'server-versions=["${{ steps.versions.outputs.branches-min }}","${{ steps.versions.outputs.branches-max }}"]' >> $GITHUB_OUTPUT
 
+      - name: Build php version list
+        id: php
+        run: |
+          php_versions=$(printf '%s\n' '${{ steps.versions.outputs.php-available }}' '8.4' | sort -u | jq -R . | jq -sc .)
+          echo "php-versions=${php_versions}" >> $GITHUB_OUTPUT
+
   static-analysis:
     runs-on: ubuntu-latest
     needs: matrix
 
     strategy:
       matrix:
+        php-version: ${{ fromJson(needs.matrix.outputs.php-versions) }}
         server-version: ${{ fromJson(needs.matrix.outputs.server-versions) }}
 
-    name: static-psalm-analysis (${{ matrix.server-version }})
+    name: static-psalm-analysis (PHP ${{ matrix.php-version }}, ${{ matrix.server-version }})
     steps:
       - name: Checkout
         uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
@@ -56,10 +63,10 @@ jobs:
       - name: Check enforcement of minimum PHP version ${{ needs.matrix.outputs.php-min }} in psalm.xml
         run: grep 'phpVersion="${{ needs.matrix.outputs.php-min }}' psalm.xml
 
-      - name: Set up php${{ needs.matrix.outputs.php-available }}
+      - name: Set up php${{ matrix.php-version }}
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2.36.0
         with:
-          php-version: ${{ needs.matrix.outputs.php-available }}
+          php-version: ${{ matrix.php-version }}
           extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, sqlite, pdo_sqlite
           coverage: none
           ini-file: development
