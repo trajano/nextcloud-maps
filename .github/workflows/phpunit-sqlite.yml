@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest-low
     outputs:
       php-version: ${{ steps.versions.outputs.php-available-list }}
-      server-max: ${{ steps.versions.outputs.branches-max-list }}
+      server-versions: ${{ steps.versions.outputs.branches }}
     steps:
       - name: Checkout app
         uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
@@ -69,7 +69,7 @@ jobs:
     strategy:
       matrix:
         php-versions: ${{ fromJson(needs.matrix.outputs.php-version) }}
-        server-versions: ${{ fromJson(needs.matrix.outputs.server-max) }}
+        server-versions: ${{ fromJson(needs.matrix.outputs.server-versions) }}
 
     name: SQLite PHP ${{ matrix.php-versions }} Nextcloud ${{ matrix.server-versions }}
 

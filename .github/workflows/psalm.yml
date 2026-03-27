@@ -18,10 +18,12 @@ permissions:
   contents: read
 
 jobs:
-  static-analysis:
-    runs-on: ubuntu-latest
-
-    name: static-psalm-analysis
+  matrix:
+    runs-on: ubuntu-latest-low
+    outputs:
+      php-available: ${{ steps.versions.outputs.php-available }}
+      php-min: ${{ steps.versions.outputs.php-min }}
+      server-versions: ${{ steps.branches.outputs.server-versions }}
     steps:
       - name: Checkout
         uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
@@ -32,13 +34,32 @@ jobs:
         id: versions
         uses: icewind1991/nextcloud-version-matrix@8a7bac6300b2f0f3100088b297995a229558ddba # v1.3.2.3.1.3.2
 
-      - name: Check enforcement of minimum PHP version ${{ steps.versions.outputs.php-min }} in psalm.xml
-        run: grep 'phpVersion="${{ steps.versions.outputs.php-min }}' psalm.xml
+      - name: Build server version list
+        id: branches
+        run: echo 'server-versions=["${{ steps.versions.outputs.branches-min }}","${{ steps.versions.outputs.branches-max }}"]' >> $GITHUB_OUTPUT
 
-      - name: Set up php${{ steps.versions.outputs.php-available }}
+  static-analysis:
+    runs-on: ubuntu-latest
+    needs: matrix
+
+    strategy:
+      matrix:
+        server-version: ${{ fromJson(needs.matrix.outputs.server-versions) }}
+
+    name: static-psalm-analysis (${{ matrix.server-version }})
+    steps:
+      - name: Checkout
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Check enforcement of minimum PHP version ${{ needs.matrix.outputs.php-min }} in psalm.xml
+        run: grep 'phpVersion="${{ needs.matrix.outputs.php-min }}' psalm.xml
+
+      - name: Set up php${{ needs.matrix.outputs.php-available }}
         uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2.36.0
         with:
-          php-version: ${{ steps.versions.outputs.php-available }}
+          php-version: ${{ needs.matrix.outputs.php-available }}
           extensions: bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, sqlite, pdo_sqlite
           coverage: none
           ini-file: development
@@ -55,8 +76,8 @@ jobs:
       - name: Check for vulnerable PHP dependencies
         run: composer require --dev roave/security-advisories:dev-latest
 
-      - name: Install nextcloud/ocp
-        run: composer require --dev nextcloud/ocp:dev-${{ steps.versions.outputs.branches-max }} --ignore-platform-reqs --with-dependencies
+      - name: Install nextcloud/ocp for ${{ matrix.server-version }}
+        run: composer require --dev nextcloud/ocp:dev-${{ matrix.server-version }} --ignore-platform-reqs --with-dependencies
 
       - name: Run coding standards check
         run: composer run psalm -- --threads=1 --monochrome --no-progress --output-format=github
