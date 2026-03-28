@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -41,7 +41,7 @@ use lsolesen\pel\PelJpeg;
 use lsolesen\pel\PelTag;
 use lsolesen\pel\PelTiff;
 
-class PhotofilesService {
+final class PhotofilesService {
 
 	public const PHOTO_MIME_TYPES = ['image/jpeg', 'image/tiff'];
 
