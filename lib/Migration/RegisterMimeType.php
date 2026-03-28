@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 namespace OCA\Maps\Migration;
 
@@ -6,7 +6,7 @@ use OCP\Files\IMimeTypeLoader;
 use OCP\Migration\IOutput;
 use OCP\Migration\IRepairStep;
 
-class RegisterMimeType implements IRepairStep {
+final class RegisterMimeType implements IRepairStep {
 	public const CUSTOM_MIMETYPEMAPPING = 'mimetypemapping.json';
 
 	protected IMimeTypeLoader $mimeTypeLoader;
