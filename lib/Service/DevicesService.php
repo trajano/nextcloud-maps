@@ -297,7 +297,15 @@ final class DevicesService {
 		return $deviceId;
 	}
 
-	public function addPointToDB(int $deviceId, float $lat, float $lng, float|int|null $ts, float|int|null $altitude, float|int|null $battery, float|int|null $accuracy): int {
+	/**
+	 * @param float|int|string $lat
+	 * @param float|int|string $lng
+	 * @param float|int|string|null $ts
+	 * @param float|int|string|null $altitude
+	 * @param float|int|string|null $battery
+	 * @param float|int|string|null $accuracy
+	 */
+	public function addPointToDB(int $deviceId, $lat, $lng, $ts, $altitude, $battery, $accuracy): int {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->insert('maps_device_points')
 			->values([

@@ -461,8 +461,9 @@ final class TracksService {
 
 	/**
 	 * @param null|string $metadata
+	 * @param null|string $etag
 	 */
-	public function editTrackInDB($id, $color, ?string $metadata, string $etag): void {
+	public function editTrackInDB($id, $color, ?string $metadata, ?string $etag): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->update('maps_tracks');
 		if ($color !== null) {
