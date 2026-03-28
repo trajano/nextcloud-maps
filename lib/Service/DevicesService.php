@@ -343,7 +343,7 @@ final class DevicesService {
 	 *
 	 * @psalm-return array{id: int, user_agent: mixed, color: mixed}|null
 	 */
-	public function getDeviceFromDB($id, $userId): array|null {
+	public function getDeviceFromDB($id, $userId): ?array {
 		$device = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'user_agent', 'color')

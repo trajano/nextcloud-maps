@@ -233,7 +233,7 @@ final class PublicContactsController extends PublicPageController {
 	 *
 	 * @return null|string
 	 */
-	private function N2FN(string $n): string|null {
+	private function N2FN(string $n): ?string {
 		if ($n) {
 			$spl = explode($n, ';');
 			if (count($spl) >= 4) {

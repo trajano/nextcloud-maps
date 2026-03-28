@@ -495,7 +495,7 @@ final class ContactsController extends Controller {
 	 *
 	 * @return null|string
 	 */
-	private function N2FN(string $n): string|null {
+	private function N2FN(string $n): ?string {
 		if ($n === '') {
 			return null;
 		}

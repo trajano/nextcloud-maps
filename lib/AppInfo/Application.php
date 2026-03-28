@@ -32,10 +32,10 @@ use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
-use OCP\Files\IRootFolder;
-use OCP\Lock\ILockingProvider;
 use OCP\AppFramework\Http\EmptyFeaturePolicy;
 use OCP\EventDispatcher\IEventDispatcher;
+use OCP\Files\IRootFolder;
+use OCP\Lock\ILockingProvider;
 use OCP\Security\FeaturePolicy\AddFeaturePolicyEvent;
 
 final class Application extends App implements IBootstrap {

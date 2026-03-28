@@ -282,7 +282,7 @@ final class GeophotoService {
 	 *
 	 * @psalm-return list{0?: null|string,...}
 	 */
-	private function getIgnoredPaths(string $userId, Folder|null $folder = null, bool $hideImagesOnCustomMaps = true): array {
+	private function getIgnoredPaths(string $userId, ?Folder $folder = null, bool $hideImagesOnCustomMaps = true): array {
 		$ignoredPaths = [];
 		$userFolder = $this->getFolderForUser($userId);
 		if (is_null($folder)) {
@@ -340,7 +340,7 @@ final class GeophotoService {
 	 * Timeordered Point sets is an Array of Arrays with time => location as key=>value pair, which are orderd by the key.
 	 * This function loads this Arrays from all Track files of the user.
 	 */
-	private function loadTimeorderedPointSets(string $userId, Folder|null $folder = null, bool $respectNomediaAndNoimage = true, bool $hideTracksOnCustomMaps = false, bool $hideTracksInMapsFolder = true): void {
+	private function loadTimeorderedPointSets(string $userId, ?Folder $folder = null, bool $respectNomediaAndNoimage = true, bool $hideTracksOnCustomMaps = false, bool $hideTracksInMapsFolder = true): void {
 		$key = $userId . ':' . (string)$respectNomediaAndNoimage . ':' . (string)$hideTracksOnCustomMaps . ':' . (string)$hideTracksInMapsFolder;
 		$this->timeorderedPointSets = $this->timeOrderedPointSetsCache->get($key);
 		if (is_null($this->timeorderedPointSets)) {
@@ -439,7 +439,7 @@ final class GeophotoService {
 	 *
 	 * @psalm-return list{mixed, mixed}|null
 	 */
-	private function getLocationFromSequenceOfPoints(int $dateTaken, array $points): array|null {
+	private function getLocationFromSequenceOfPoints(int $dateTaken, array $points): ?array {
 		$foo = end($points);
 		$end = key($points);
 		$foo = reset($points);
@@ -490,7 +490,7 @@ final class GeophotoService {
 	 *
 	 * @psalm-return array<string>|string
 	 */
-	private function normalizePath(string|null $path): array|string {
+	private function normalizePath(?string $path): array|string {
 		return str_replace('files', '', $path);
 	}
 

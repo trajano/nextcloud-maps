@@ -120,8 +120,8 @@ class PublicPageController extends AuthPublicShareController {
 	/**
 	 * @return PublicTemplateResponse
 	 */
-#[\OCP\AppFramework\Http\Attribute\PublicPage]
-#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function showShare(): PublicTemplateResponse {
 		$shareNode = $this->getShareNode();
 
@@ -144,8 +144,8 @@ class PublicPageController extends AuthPublicShareController {
 	 *
 	 * @return PublicTemplateResponse
 	 */
-#[\OCP\AppFramework\Http\Attribute\PublicPage]
-#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function showAuthenticate(): PublicTemplateResponse {
 		$templateParameters = ['share' => $this->share];
 

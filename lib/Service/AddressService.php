@@ -23,7 +23,8 @@ use OpenLocationCode\OpenLocationCode;
 use Psr\Log\LoggerInterface;
 use Sabre\VObject\Reader;
 
-/**final 
+/**
+ * final
  * Class AddressService
  *
  * The address service can be used to get lat lng information for an address.

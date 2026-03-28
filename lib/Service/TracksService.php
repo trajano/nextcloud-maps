@@ -210,7 +210,7 @@ final class TracksService {
 	 *
 	 * @psalm-return array{id: int, file_id: int, color: mixed, metadata: mixed, etag: mixed, path: mixed, isShareable: mixed, isDeletable: mixed, isUpdateable: mixed, isReadable: mixed, mtime: mixed, file_name: mixed, file_path: mixed}|null
 	 */
-	private function dbRowToTrack($row, Folder $folder, Folder $userFolder, bool $defaultMap, array $ignoredPaths): array|null {
+	private function dbRowToTrack($row, Folder $folder, Folder $userFolder, bool $defaultMap, array $ignoredPaths): ?array {
 		// avoid tracks that are not in "this map's" folder
 		$files = $folder->getById(intval($row['file_id']));
 		if (empty($files)) {
@@ -342,7 +342,7 @@ final class TracksService {
 	/**
 	 * @param null|string $userId
 	 */
-	public function getTrackFromDB($id, string|null $userId = null) {
+	public function getTrackFromDB($id, ?string $userId = null) {
 		$track = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'file_id', 'color', 'metadata', 'etag')
@@ -442,7 +442,7 @@ final class TracksService {
 		return $track;
 	}
 
-	public function addTrackToDB(string|null $userId, int $fileId, Node $file): int {
+	public function addTrackToDB(?string $userId, int $fileId, Node $file): int {
 		$metadata = '';
 		$etag = $file->getEtag();
 		$qb = $this->dbconnection->getQueryBuilder();
@@ -529,7 +529,7 @@ final class TracksService {
 		$qb->executeStatement();
 	}
 
-	public function generateTrackMetadata($file): string|null {
+	public function generateTrackMetadata($file): ?string {
 		$DISTANCE_BETWEEN_SHORT_POINTS = 300;
 		$STOPPED_SPEED_THRESHOLD = 0.9;
 

@@ -126,7 +126,7 @@ final class PublicTracksController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, array, array<never, never>>
 	 */
-#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getTracks(): DataResponse {
 		$share = $this->getShare();
 		$hideDownload = (bool)$share->getHideDownload();
@@ -163,7 +163,7 @@ final class PublicTracksController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
-#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getTrackContentByFileId($id): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -209,7 +209,7 @@ final class PublicTracksController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
-#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getTrackFileContent($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id);
 		$res = is_null($track) ? null : $this->getShareNode()->getById($track['file_id']);
@@ -250,7 +250,7 @@ final class PublicTracksController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
-#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function editTrack($id, $color, $metadata, $etag): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -277,7 +277,7 @@ final class PublicTracksController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
-#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteTrack($id): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();

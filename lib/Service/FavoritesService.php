@@ -119,7 +119,7 @@ final class FavoritesService {
 	 *
 	 * @psalm-return array{id: int, name: mixed, date_modified: int, date_created: int, lat: float, lng: float, category: mixed, comment: mixed, extensions: mixed, isDeletable: mixed, isUpdateable: mixed, isShareable: mixed}|null
 	 */
-	public function getFavoriteFromDB(int $id, string|null $userId = null, $category = null, $isDeletable = true, $isUpdateable = true, $isShareable = true): array|null {
+	public function getFavoriteFromDB(int $id, ?string $userId = null, $category = null, $isDeletable = true, $isUpdateable = true, $isShareable = true): ?array {
 		$favorite = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'name', 'date_modified', 'date_created', 'lat', 'lng', 'category', 'comment', 'extensions')
@@ -170,7 +170,7 @@ final class FavoritesService {
 		return $favorite;
 	}
 
-	public function addFavoriteToDB(string $userId, string|null $name, $lat, float $lng, string|null $category, string|null $comment, string|null $extensions): int {
+	public function addFavoriteToDB(string $userId, ?string $name, $lat, float $lng, ?string $category, ?string $comment, ?string $extensions): int {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->insert('maps_favorites')
@@ -252,7 +252,7 @@ final class FavoritesService {
 		$qb->executeStatement();
 	}
 
-	public function editFavoriteInDB(int $id, string|null $name, float|null $lat, float|null $lng, string|null $category, string|null $comment, string|null $extensions): void {
+	public function editFavoriteInDB(int $id, ?string $name, ?float $lat, ?float $lng, ?string $category, ?string $comment, ?string $extensions): void {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->update('maps_favorites');
@@ -311,7 +311,7 @@ final class FavoritesService {
 		$qb->executeStatement();
 	}
 
-	public function countFavorites(string $userId, array|null $categoryList, int|null $begin, int|null $end): int {
+	public function countFavorites(string $userId, ?array $categoryList, ?int $begin, ?int $end): int {
 		if ($categoryList === null
 			or (is_array($categoryList) and count($categoryList) === 0)
 		) {
@@ -486,7 +486,7 @@ final class FavoritesService {
 	 * @param null|string $comment
 	 * @param null|string $extensions
 	 */
-	public function addFavoriteToJSON($file, string|null $name, float $lat, float $lng, string|null $category, string|null $comment, string|null $extensions) {
+	public function addFavoriteToJSON($file, ?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions) {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$data = json_decode($file->getContent(), true, 512);
 
@@ -529,7 +529,7 @@ final class FavoritesService {
 		$file->putContent(json_encode($data, JSON_PRETTY_PRINT));
 	}
 
-	public function editFavoriteInJSON($file, int $id, string|null $name, float|null $lat, float|null $lng, string|null $category, string|null $comment, string|null $extensions): void {
+	public function editFavoriteInJSON($file, int $id, ?string $name, ?float $lat, ?float $lng, ?string $category, ?string $comment, ?string $extensions): void {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$data = json_decode($file->getContent(), true, 512);
 		$createdTimeStamp = $data['features'][$id]['properties']['Published'];
@@ -580,7 +580,7 @@ final class FavoritesService {
 		$file->putContent(json_encode($data, JSON_PRETTY_PRINT));
 	}
 
-	public function exportFavorites(string $userId, $fileHandler, array|null $categoryList, int|null $begin, int|null $end, string $appVersion): void {
+	public function exportFavorites(string $userId, $fileHandler, ?array $categoryList, ?int $begin, ?int $end, string $appVersion): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$nbFavorites = $this->countFavorites($userId, $categoryList, $begin, $end);
 

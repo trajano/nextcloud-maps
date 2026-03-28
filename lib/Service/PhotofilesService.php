@@ -78,7 +78,7 @@ final class PhotofilesService {
 	 *
 	 * @psalm-return \Generator<int, mixed, mixed, void>
 	 */
-	public function rescan(string $userId, bool $inBackground = true, string|null $pathToScan = null): \Generator {
+	public function rescan(string $userId, bool $inBackground = true, ?string $pathToScan = null): \Generator {
 		$this->photosCache->clear($userId);
 		$userFolder = $this->root->getUserFolder($userId);
 		if ($pathToScan === null) {

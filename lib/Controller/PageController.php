@@ -48,8 +48,8 @@ final class PageController extends Controller {
 	 *
 	 * @return TemplateResponse
 	 */
-#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
-#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function index(): TemplateResponse {
 		$this->eventDispatcher->dispatch(LoadSidebar::class, new LoadSidebar());
 		$this->eventDispatcher->dispatch(LoadViewer::class, new LoadViewer());
@@ -66,8 +66,8 @@ final class PageController extends Controller {
 	/**
 	 * @return RedirectResponse|TemplateResponse
 	 */
-#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
-#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function indexMyMap(int $myMapId, MyMapsService $service): TemplateResponse|RedirectResponse {
 		$map = $service->getMyMap($myMapId, $this->userId);
 		if ($map !== null && $map['id'] !== $myMapId) {
@@ -93,8 +93,8 @@ final class PageController extends Controller {
 	/**
 	 * @return TemplateResponse
 	 */
-#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
-#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function openGeoLink(mixed $url): TemplateResponse {
 		return $this->index();
 	}
