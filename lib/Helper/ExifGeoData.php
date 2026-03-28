@@ -4,7 +4,7 @@
  * Nextcloud - maps
  *
  * This file is licensed under the Affero General Public License version 3 or
- * later. See tfinal he COPYING file.
+ * later. See the COPYING file.
  *
  * @author Gergely Kovács 2021
  * @copyright Gergely Kovács 2021

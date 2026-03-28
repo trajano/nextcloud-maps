@@ -194,7 +194,7 @@ final class FavoritesService {
 		return $favoriteId;
 	}
 
-	public function addMultipleFavoritesToDB($userId, array $favoriteList): void {
+	public function addMultipleFavoritesToDB(string $userId, array $favoriteList): void {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 
 		$qb = $this->dbconnection->getQueryBuilder();
@@ -494,7 +494,7 @@ final class FavoritesService {
 	 * @param null|string $comment
 	 * @param null|string $extensions
 	 */
-	public function addFavoriteToJSON($file, ?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions) {
+	public function addFavoriteToJSON($file, ?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions): int {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$data = json_decode($file->getContent(), true, 512);
 
@@ -699,7 +699,12 @@ final class FavoritesService {
 		}
 	}
 
-	public function importFavoritesFromKmz(string $userId, File $file) {
+	/**
+	 * @return (false|int)[]|int
+	 *
+	 * @psalm-return 0|array{nbImported: 0, linesFound: false}
+	 */
+	public function importFavoritesFromKmz(string $userId, File $file): array|int {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 		$name = $file->getName();
 		$zf = new ZIP($path);

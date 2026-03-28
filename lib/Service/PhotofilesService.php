@@ -256,7 +256,12 @@ final class PhotofilesService {
 		];
 	}
 
-	public function setPhotosFilesCoords($userId, $paths, $lats, $lngs, $directory) {
+	/**
+	 * @return ((int|mixed|null|string|string[])[]|mixed)[]
+	 *
+	 * @psalm-return list{0?: array{lat: 0|mixed, lng: 0|mixed, oldLat: mixed|null, oldLng: mixed|null, path: array<string>|null|string},...}
+	 */
+	public function setPhotosFilesCoords($userId, $paths, $lats, $lngs, $directory): array {
 		if ($directory) {
 			return $this->setDirectoriesCoords($userId, $paths, $lats, $lngs);
 		} else {
@@ -420,7 +425,12 @@ final class PhotofilesService {
 		return str_replace('files', '', $node->getInternalPath());
 	}
 
-	public function getPhotosByFolder($userId, $path) {
+	/**
+	 * @return (\stdClass|mixed)[]
+	 *
+	 * @psalm-return list{0?: \stdClass,...}
+	 */
+	public function getPhotosByFolder($userId, $path): array {
 		$userFolder = $this->root->getUserFolder($userId);
 		$folder = $userFolder->get($path);
 		return $this->getPhotosListForFolder($folder);

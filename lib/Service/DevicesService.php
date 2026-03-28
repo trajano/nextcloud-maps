@@ -687,7 +687,7 @@ final class DevicesService {
 		}
 	}
 
-	public function importDevicesFromKmz($userId, $file) {
+	public function importDevicesFromKmz($userId, $file): int {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 		$name = $file->getName();
 		$zf = new ZIP($path);

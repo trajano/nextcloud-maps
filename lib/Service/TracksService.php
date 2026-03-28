@@ -342,8 +342,12 @@ final class TracksService {
 
 	/**
 	 * @param null|string $userId
+	 *
+	 * @return (false|int|mixed|string)[]|null
+	 *
+	 * @psalm-return array{id: int, file_id: int, color: mixed, metadata: mixed, etag: mixed, path: ''|mixed, isShareable: false|mixed, isDeletable: false|mixed, isUpdateable: false|mixed, isReadable: false|mixed, mtime: 0|mixed, file_name: ''|mixed, file_path: ''|mixed}|null
 	 */
-	public function getTrackFromDB($id, ?string $userId = null) {
+	public function getTrackFromDB($id, ?string $userId = null): ?array {
 		$track = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'file_id', 'color', 'metadata', 'etag')
@@ -393,7 +397,12 @@ final class TracksService {
 		return $track;
 	}
 
-	public function getTrackByFileIDFromDB(int $fileId, ?string $userId = null) {
+	/**
+	 * @return (false|int|mixed|string)[]|null
+	 *
+	 * @psalm-return array{id: int, file_id: int, color: mixed, metadata: mixed, etag: mixed, path: ''|mixed, isShareable: false|mixed, isDeletable: false|mixed, isUpdateable: false|mixed, isReadable: false|mixed, mtime: 0|mixed, file_name: ''|mixed, file_path: ''|mixed}|null
+	 */
+	public function getTrackByFileIDFromDB(int $fileId, ?string $userId = null): ?array {
 		$track = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'file_id', 'color', 'metadata', 'etag')
@@ -981,7 +990,7 @@ final class TracksService {
 	/**
 	 * @psalm-param list<mixed> $points
 	 */
-	private function getMaxSpeed(array $points) {
+	private function getMaxSpeed(array $points): float|int {
 		$maxSpeed = 0;
 
 		if (count($points) > 0) {

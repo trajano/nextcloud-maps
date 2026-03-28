@@ -25,7 +25,7 @@ use Sabre\VObject\Reader;
 
 /**
  * final
- * Class AddressService
+ * Class Afinal ddressService
  *
  * The address service can be used to get lat lng information for an address.
  * The service takes care of caching and rate limits.
@@ -81,7 +81,7 @@ class AddressService {
 	 *
 	 * @psalm-return list{mixed, mixed, mixed}
 	 */
-	public function lookupAddress($adr, $uri): array {
+	public function lookupAddress($adr, int|string $uri): array {
 		$adr_norm = strtolower(preg_replace('/\s+/', '', $adr));
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'lat', 'lng', 'looked_up')
