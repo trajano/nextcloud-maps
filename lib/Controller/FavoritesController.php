@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - Maps
@@ -33,7 +33,7 @@ use OCP\IServerContainer;
 use OCP\IUserManager;
 use OCP\Share\IManager;
 
-class FavoritesController extends Controller {
+final class FavoritesController extends Controller {
 
 	private string $userId;
 	private \OCP\Files\Folder $userFolder;
