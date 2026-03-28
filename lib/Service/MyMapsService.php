@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -22,7 +22,7 @@ use OCP\Files\NotPermittedException;
 use OCP\Files\Search\ISearchComparison;
 use Psr\Log\LoggerInterface;
 
-class MyMapsService {
+final class MyMapsService {
 
 	public function __construct(
 		private LoggerInterface $logger,
