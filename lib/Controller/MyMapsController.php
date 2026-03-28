@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - Maps
@@ -19,7 +19,7 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
-class MyMapsController extends Controller {
+final class MyMapsController extends Controller {
 
 
 	/* @var MyMapsService */
