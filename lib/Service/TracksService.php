@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -27,7 +27,7 @@ use OCP\IL10N;
 use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
-class TracksService {
+final class TracksService {
 
 	public const TRACK_MIME_TYPES = ['application/gpx+xml'];
 
