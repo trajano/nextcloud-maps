@@ -33,7 +33,10 @@ final class LookupMissingGeoJob extends QueuedJob {
 		parent::__construct($timeFactory);
 	}
 
-	public function run($argument) {
+	/**
+	 * @param array<never, never> $argument
+	 */
+	public function run($argument): void {
 		\OCP\Server::get(LoggerInterface::class)->debug('Maps address lookup cronjob executed');
 		// lookup at most 200 addresses
 		if (!$this->addressService->lookupMissingGeo(200)) {
