@@ -65,9 +65,6 @@ final class UpdatePhotoByFileJob extends QueuedJob {
 			return;
 		}
 		$file = array_shift($files);
-		if ($file === false) {
-			return;
-		}
 		$this->photofilesService->updateByFileNow($file);
 
 		$counter = (int)($this->backgroundJobCache->get('recentlyUpdated:' . $userId) ?? 0);
