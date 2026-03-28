@@ -46,10 +46,6 @@ final class PhotosController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
-	 * @NoCSRFRequired
-	 *
 	 * @param null $myMapId
 	 * @param null $respectNoMediaAndNoimage
 	 * @param null $hideImagesOnCustomMaps
@@ -64,6 +60,8 @@ final class PhotosController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function getPhotos($myMapId = null, $respectNoMediaAndNoimage = null, $hideImagesOnCustomMaps = null, $hideImagesInMapsFolder = null): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
 		if (is_null($myMapId) || $myMapId === '') {
@@ -77,10 +75,6 @@ final class PhotosController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
-	 * @NoCSRFRequired
-	 *
 	 * @param int|null $myMapId
 	 * @param string|null $timezone
 	 * @param int $limit
@@ -98,6 +92,8 @@ final class PhotosController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function getNonLocalizedPhotos(?int $myMapId = null, ?string $timezone = null, int $limit = 250, int $offset = 0, $respectNoMediaAndNoimage = null, $hideImagesOnCustomMaps = null, $hideImagesInMapsFolder = null): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
 		if (is_null($myMapId) || $myMapId === '') {
@@ -112,8 +108,6 @@ final class PhotosController extends Controller {
 
 
 	/**
-	 * @NoAdminRequired
-	 *
 	 * @param $paths
 	 * @param $lats
 	 * @param $lngs
@@ -130,6 +124,7 @@ final class PhotosController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<200|400, array<never, never>, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function placePhotos($paths, $lats, $lngs, bool $directory = false, $myMapId = null, bool $relative = false): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
 		if (!is_null($myMapId) and $myMapId !== '') {
@@ -166,14 +161,13 @@ final class PhotosController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
 	 * @param $paths
 	 *
 	 * @return DataResponse
 	 *
 	 * @psalm-return DataResponse<200, array<never, never>|mixed, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function resetPhotosCoords($paths, $myMapId = null): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
 		$result = [];
@@ -195,12 +189,11 @@ final class PhotosController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
 	 * @return DataResponse
 	 *
 	 * @psalm-return DataResponse<200|400, 'Cache cleared'|'Failed to clear Cache', array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function clearCache(): DataResponse {
 		$result = $this->geophotoService->clearCache();
 		if ($result) {
@@ -211,12 +204,11 @@ final class PhotosController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
 	 * @return DataResponse
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getBackgroundJobStatus(): DataResponse {
 		return new DataResponse($this->photofilesService->getBackgroundJobStatus($this->userId));
 	}

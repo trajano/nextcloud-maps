@@ -88,7 +88,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param ?string[] $tokens
 	 * @param ?int $myMapId
@@ -97,6 +96,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, list<value-of<array>>, array<never, never>>|DataResponse<404, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevices($tokens = null, $myMapId = null): DataResponse {
 		if (is_null($tokens)) {
 			$tokens = [];
@@ -126,7 +126,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param string[] $tokens
 	 *
@@ -134,13 +133,13 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, list<value-of<array>>, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevicesByTokens(array $tokens): DataResponse {
 		$devices = $this->devicesService->getDevicesByTokens($tokens);
 		return new DataResponse(array_values($devices));
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param $id
 	 * @param int $pruneBefore
@@ -149,6 +148,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevicePoints($id, ?int $pruneBefore = 0, ?int $limit = 10000, ?int $offset = 0, ?array $tokens = null): DataResponse {
 		if (is_null($tokens)) {
 			$points = $this->devicesService->getDevicePointsFromDB($this->userId, $id, $pruneBefore, $limit, $offset);
@@ -159,7 +159,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param $lat
 	 * @param $lng
@@ -173,6 +172,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, array{deviceId: mixed, pointId: mixed}, array<never, never>>|DataResponse<400, 'Invalid values', array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addDevicePoint($lat, $lng, $timestamp = null, $user_agent = null, $altitude = null, $battery = null, $accuracy = null): DataResponse {
 		if (is_numeric($lat) and is_numeric($lng)) {
 			$ts = $timestamp;
@@ -195,7 +195,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param $id
 	 * @param $color
@@ -205,6 +204,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function editDevice($id, $color, $name): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
@@ -223,7 +223,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param $id
 	 *
@@ -231,6 +230,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteDevice($id): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
@@ -243,7 +243,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param ?array $deviceIdList
 	 * @param int $begin
@@ -255,6 +254,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, string, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function exportDevices($deviceIdList, $begin, $end, bool $all = false): DataResponse {
 		// sorry about ugly deviceIdList management:
 		// when an empty list is passed in http request, we get null here
@@ -304,7 +304,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param $path
 	 *
@@ -315,6 +314,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function importDevices($path): DataResponse {
 		$userFolder = $this->userfolder;
 		$cleanpath = str_replace(['../', '..\\'], '', $path);
@@ -359,7 +359,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param int|null $myMapId
 	 *
@@ -370,6 +369,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, array<never, never>|mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getSharedDevices(?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
 			$sharedDevices = [];
@@ -383,7 +383,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param int $id
 	 * @param int $timestampFrom
@@ -393,6 +392,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200|400|500, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function shareDevice(int $id, int $timestampFrom, int $timestampTo): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
@@ -409,7 +409,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param int $token
 	 *
@@ -420,6 +419,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function removeDeviceShare(int $token): DataResponse {
 		try {
 			$share = $this->deviceShareMapper->findByToken($token);
@@ -435,7 +435,6 @@ final class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param string $token
 	 * @param $targetMapId
@@ -446,6 +445,7 @@ final class DevicesController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, 'Done', array<never, never>>|DataResponse<200|404, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addSharedDeviceToMap(string $token, $targetMapId): DataResponse {
 		try {
 			$share = $this->deviceShareMapper->findByToken($token);

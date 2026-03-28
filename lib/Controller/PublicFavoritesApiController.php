@@ -98,12 +98,11 @@ final class PublicFavoritesApiController extends PublicShareController {
 	}
 
 	/**
-	 * @PublicPage
-	 *
 	 * @return DataResponse
 	 *
 	 * @psalm-return DataResponse<200|404|500, array{share?: mixed, favorites?: mixed}, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getFavorites(): DataResponse {
 		try {
 			$share = $this->favoriteShareMapper->findByToken($this->getToken());

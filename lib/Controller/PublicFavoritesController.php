@@ -156,7 +156,6 @@ final class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @return DataResponse
 	 *
@@ -165,6 +164,7 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, array, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getFavorites(): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -188,7 +188,6 @@ final class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @param string|null $name
 	 * @param float $lat
@@ -205,6 +204,7 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function addFavorite(?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions): DataResponse {
 		if (is_numeric($lat) && is_numeric($lng)) {
 			$share = $this->getShare();
@@ -227,7 +227,6 @@ final class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @param array $favorites
 	 *
@@ -239,6 +238,7 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, list{0?: mixed,...}, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function addFavorites(array $favorites): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -262,7 +262,6 @@ final class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @param int $id
 	 * @param string|null $name
@@ -280,6 +279,7 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function editFavorite(int $id, ?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -309,7 +309,6 @@ final class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @param array $categories
 	 * @param string $newName
@@ -322,6 +321,7 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, 'RENAMED', array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function renameCategories(array $categories, string $newName): DataResponse {
 		if (is_array($categories)) {
 			$share = $this->getShare();
@@ -343,7 +343,6 @@ final class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @param int $id
 	 *
@@ -355,6 +354,7 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function deleteFavorite(int $id): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -374,7 +374,6 @@ final class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @param array $ids
 	 *
@@ -386,6 +385,7 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function deleteFavorites(array $ids): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -402,7 +402,6 @@ final class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @return DataResponse
 	 *
@@ -411,6 +410,7 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getSharedCategories(): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();

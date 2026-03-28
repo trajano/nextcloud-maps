@@ -73,13 +73,13 @@ final class FavoritesApiController extends ApiController {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 * @CORS
 	 * @param $apiversion
 	 * @param int $pruneBefore
 	 * @return DataResponse
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function getFavorites($apiversion, int $pruneBefore = 0): DataResponse {
 		$now = new \DateTime();
 
@@ -95,12 +95,6 @@ final class FavoritesApiController extends ApiController {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
-	 * @NoCSRFRequired
-	 *
-	 * @CORS
-	 *
 	 * @param $apiversion
 	 * @param $name
 	 * @param $lat
@@ -113,6 +107,9 @@ final class FavoritesApiController extends ApiController {
 	 *
 	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function addFavorite($apiversion, $name, $lat, $lng, $category, $comment, $extensions): DataResponse {
 		if (is_numeric($lat) && is_numeric($lng)) {
 			$favoriteId = $this->favoritesService->addFavoriteToDB($this->userId, $name, $lat, $lng, $category, $comment, $extensions);
@@ -124,12 +121,6 @@ final class FavoritesApiController extends ApiController {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
-	 * @NoCSRFRequired
-	 *
-	 * @CORS
-	 *
 	 * @param $id
 	 * @param $name
 	 * @param $lat
@@ -142,6 +133,9 @@ final class FavoritesApiController extends ApiController {
 	 *
 	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function editFavorite($id, $name, $lat, $lng, $category, $comment, $extensions): DataResponse {
 		$favorite = $this->favoritesService->getFavoriteFromDB($id, $this->userId);
 		if ($favorite !== null) {
@@ -160,18 +154,15 @@ final class FavoritesApiController extends ApiController {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
-	 * @NoCSRFRequired
-	 *
-	 * @CORS
-	 *
 	 * @param $id
 	 *
 	 * @return DataResponse
 	 *
 	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function deleteFavorite($id): DataResponse {
 		$favorite = $this->favoritesService->getFavoriteFromDB($id, $this->userId);
 		if ($favorite !== null) {

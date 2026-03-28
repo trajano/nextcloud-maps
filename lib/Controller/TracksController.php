@@ -69,7 +69,6 @@ final class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @return DataResponse
 	 *
@@ -78,6 +77,7 @@ final class TracksController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getTracks($myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
 			$tracks = $this->tracksService->getTracksFromDB($this->userId, $this->userfolder, true, false, true);
@@ -90,10 +90,10 @@ final class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getTrackContentByFileId($id): DataResponse {
 		$track = $this->tracksService->getTrackByFileIDFromDB($id, $this->userId);
 		$res = is_null($track) ? null : $this->userfolder->getById($track['file_id']);
@@ -122,7 +122,6 @@ final class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param $id
 	 *
@@ -133,6 +132,7 @@ final class TracksController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getTrackFileContent($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id);
 		$res = is_null($track) ? null : $this->userfolder->getById($track['file_id']);
@@ -161,7 +161,6 @@ final class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param $id
 	 * @param $color
@@ -172,6 +171,7 @@ final class TracksController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, 'EDITED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function editTrack($id, $color, $metadata, $etag): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id, $this->userId);
 		if ($track !== null) {
@@ -183,7 +183,6 @@ final class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param $id
 	 *
@@ -191,6 +190,7 @@ final class TracksController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteTrack($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id, $this->userId);
 		if ($track !== null) {

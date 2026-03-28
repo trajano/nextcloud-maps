@@ -72,11 +72,11 @@ final class DevicesApiController extends ApiController {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 * @CORS
 	 * @param string|int $apiversion
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function getDevices(string|int $apiversion): Response {
 		$now = new \DateTime();
 
@@ -92,28 +92,28 @@ final class DevicesApiController extends ApiController {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
-	 * @NoCSRFRequired
 	 *
-	 * @CORS
 	 *
 	 * @param int $pruneBefore
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function getDevicePoints(int $id, int $pruneBefore = 0): DataResponse {
 		$points = $this->devicesService->getDevicePointsFromDB($this->userId, $id, $pruneBefore);
 		return new DataResponse($points);
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
-	 * @NoCSRFRequired
 	 *
-	 * @CORS
 	 *
 	 * @param string|int $apiversion
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function addDevicePoint(string|int $apiversion, mixed $lat, mixed $lng, mixed $timestamp = null, ?string $user_agent = null, mixed $altitude = null, mixed $battery = null, mixed $accuracy = null): DataResponse {
 		if (is_numeric($lat) and is_numeric($lng)) {
 			$timestamp = $this->normalizeOptionalNumber($timestamp);
@@ -140,13 +140,13 @@ final class DevicesApiController extends ApiController {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
-	 * @NoCSRFRequired
 	 *
-	 * @CORS
 	 *
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function editDevice(int $id, string $color): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
@@ -163,13 +163,13 @@ final class DevicesApiController extends ApiController {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
-	 * @NoCSRFRequired
 	 *
-	 * @CORS
 	 *
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	#[\OCP\AppFramework\Http\Attribute\CORS]
 	public function deleteDevice(int $id): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {

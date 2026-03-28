@@ -101,7 +101,6 @@ final class PublicPhotosController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @return DataResponse
 	 *
@@ -111,6 +110,7 @@ final class PublicPhotosController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, array<object>, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getPhotos(): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -137,7 +137,6 @@ final class PublicPhotosController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @return DataResponse
 	 *
@@ -148,6 +147,7 @@ final class PublicPhotosController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, array<object>, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getNonLocalizedPhotos(?string $timezone = null, int $limit = 250, int $offset = 0): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -174,12 +174,12 @@ final class PublicPhotosController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @return DataResponse
 	 *
 	 * @psalm-return DataResponse<200|400, 'Cache cleared'|'Failed to clear Cache', array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function clearCache(): DataResponse {
 		$result = $this->geophotoService->clearCache();
 		if ($result) {

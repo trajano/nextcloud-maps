@@ -106,7 +106,6 @@ final class PublicUtilsController extends PublicPageController {
 	 *
 	 * Save options values to the DB for current user
 	 *
-	 * @PublicPage
 	 *
 	 * @param $options
 	 * @param null $myMapId
@@ -120,6 +119,7 @@ final class PublicUtilsController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, array{done: 1}, array<never, never>>|DataResponse<500, 'File is locked', array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function saveOptionValue($options, $myMapId = null): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -156,7 +156,6 @@ final class PublicUtilsController extends PublicPageController {
 	 *
 	 * get options values from the config for current user
 	 *
-	 * @PublicPage
 	 *
 	 * @return DataResponse
 	 *
@@ -167,6 +166,7 @@ final class PublicUtilsController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, array{values: mixed}, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getOptionsValues(): DataResponse {
 		$ov = [];
 
@@ -221,12 +221,12 @@ final class PublicUtilsController extends PublicPageController {
 	 *
 	 * get content of mapbox traffic style
 	 *
-	 * @PublicPage
 	 *
 	 * @return DataResponse
 	 *
 	 * @psalm-return DataResponse<200, array{version: 8, name: 'Mapbox Traffic tileset v1', sources: array{'mapbox-traffic': array{url: 'mapbox://mapbox.mapbox-traffic-v1', type: 'vector'}}, layers: list{array{id: 'traffic', source: 'mapbox-traffic', 'source-layer': 'traffic', type: 'line', paint: array{'line-width': float, 'line-color': list{'case', list{'==', 'low', list{'get', 'congestion'}}, '#00ff00', list{'==', 'moderate', list{'get', 'congestion'}}, '#ffad00', list{'==', 'heavy', list{'get', 'congestion'}}, '#ff0000', list{'==', 'severe', list{'get', 'congestion'}}, '#b43b71', '#000000'}}}}}, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getTrafficStyle(): DataResponse {
 		$style = [
 			'version' => 8,

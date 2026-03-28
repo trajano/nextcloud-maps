@@ -117,7 +117,6 @@ final class PublicContactsController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 *
 	 * @return DataResponse
 	 *
@@ -127,6 +126,7 @@ final class PublicContactsController extends PublicPageController {
 	 *
 	 * @psalm-return DataResponse<200, list{0?: array,...}, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getContacts(): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -248,9 +248,7 @@ final class PublicContactsController extends PublicPageController {
 
 
 	/**
-	 * @PublicPage
 	 *
-	 * @NoCSRFRequired
 	 *
 	 * @param string $name
 	 *
@@ -261,6 +259,8 @@ final class PublicContactsController extends PublicPageController {
 	 *
 	 * @psalm-return DataDisplayResponse<200, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function getContactLetterAvatar(string $name): DataDisplayResponse {
 		$av = $this->avatarManager->getGuestAvatar($name);
 		$avatarContent = $av->getFile(64)->getContent();

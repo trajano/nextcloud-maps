@@ -33,10 +33,10 @@ final class MyMapsController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addMyMap(array $values): DataResponse {
 		$newName = $values['newName'] ?? 'New Map';
 		$myMap = $this->myMapsService->addMyMap($newName, $this->userId);
@@ -47,30 +47,30 @@ final class MyMapsController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function updateMyMap(int $id, array $values): DataResponse {
 		$myMap = $this->myMapsService->updateMyMap($id, $values, $this->userId);
 		return new DataResponse($myMap);
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteMyMap(int $id): DataResponse {
 		$result = $this->myMapsService->deleteMyMap($id, $this->userId);
 		return new DataResponse($result);
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getMyMaps(): DataResponse {
 		$myMaps = $this->myMapsService->getAllMyMaps($this->userId);
 		return new DataResponse($myMaps);

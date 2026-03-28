@@ -196,7 +196,6 @@ final class ContactsController extends Controller {
 	 *
 	 * get contacts with coordinates
 	 *
-	 * @NoAdminRequired
 	 *
 	 * @param int|string|null $myMapId
 	 *
@@ -205,6 +204,7 @@ final class ContactsController extends Controller {
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getContacts(int|string|null $myMapId = null): DataResponse {
 		$resolvedMapId = is_int($myMapId) ? $myMapId : (is_string($myMapId) && ctype_digit($myMapId) ? (int)$myMapId : null);
 		if ($resolvedMapId === null) {
@@ -512,7 +512,6 @@ final class ContactsController extends Controller {
 	 *
 	 * get all contacts
 	 *
-	 * @NoAdminRequired
 	 *
 	 * @param string $query
 	 *
@@ -520,6 +519,7 @@ final class ContactsController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, list{0?: array{FN: mixed|string, URI: mixed, UID: mixed, BOOKID: mixed, READONLY: ''|mixed, BOOKURI: mixed, HAS_PHOTO: bool, HAS_PHOTO2: bool},...}, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function searchContacts(string $query = ''): DataResponse {
 		$contacts = $this->contactsManager->search($query, ['FN'], ['types' => false]);
 		$booksReadOnly = $this->getAddressBooksReadOnly();
@@ -561,7 +561,6 @@ final class ContactsController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param string $bookid
 	 * @param string $uri
@@ -588,6 +587,7 @@ final class ContactsController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200|400|404, string, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function placeContact(
 		string $bookid,
 		string $uri,
@@ -710,7 +710,6 @@ final class ContactsController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 *
 	 * @param string $bookid
 	 * @param string $uri
@@ -720,6 +719,7 @@ final class ContactsController extends Controller {
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addContactToMap(string $bookid, string $uri, int $myMapId, ?int $fileId = null): DataResponse {
 		$mapsFolder = $this->getMapFolder($myMapId);
 		if ($mapsFolder === null) {
@@ -833,9 +833,7 @@ final class ContactsController extends Controller {
 	 *
 	 * get contacts with coordinates
 	 *
-	 * @NoAdminRequired
 	 *
-	 * @NoCSRFRequired
 	 *
 	 * @param string $name
 	 *
@@ -846,6 +844,8 @@ final class ContactsController extends Controller {
 	 *
 	 * @psalm-return DataDisplayResponse<200, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function getContactLetterAvatar(string $name): DataDisplayResponse {
 		$av = $this->avatarManager->getGuestAvatar($name);
 		$avatarContent = $av->getFile(64)->getContent();
@@ -857,7 +857,6 @@ final class ContactsController extends Controller {
 	 * removes the address from the vcard
 	 * and delete corresponding entry in the DB
 	 *
-	 * @NoAdminRequired
 	 *
 	 * @param string $bookid
 	 * @param string $uri
@@ -871,6 +870,7 @@ final class ContactsController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200|400, 'DELETED'|'FAILED'|'READONLY', array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteContactAddress(string $bookid, string $uri, string $uid, string $adr, string $geo, ?int $fileId = null, ?int $myMapId = null): DataResponse {
 
 		// vcard

@@ -40,18 +40,16 @@ final class PageController extends Controller {
 
 	/**
 	 *
-	 * CAUTION: the @Stuff turns off security checks; for this page no admin is
+	 * CAUTION: these attributes turn off security checks; for this page no admin is
 	 * required and no CSRF check. If you don't know what CSRF is, read
 	 * it up in the docs or you might create a security hole. This is
 	 * basically the only required method to add this exemption, don't
 	 * add it to any other method if you don't exactly know what it does
 	 *
-	 * @NoAdminRequired
-	 *
-	 * @NoCSRFRequired
-	 *
 	 * @return TemplateResponse
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function index(): TemplateResponse {
 		$this->eventDispatcher->dispatch(LoadSidebar::class, new LoadSidebar());
 		$this->eventDispatcher->dispatch(LoadViewer::class, new LoadViewer());
@@ -66,12 +64,10 @@ final class PageController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 *
-	 * @NoCSRFRequired
-	 *
 	 * @return RedirectResponse|TemplateResponse
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function indexMyMap(int $myMapId, MyMapsService $service): TemplateResponse|RedirectResponse|RedirectResponse {
 		$map = $service->getMyMap($myMapId, $this->userId);
 		if ($map !== null && $map['id'] !== $myMapId) {
@@ -95,10 +91,10 @@ final class PageController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
 	 * @return TemplateResponse
 	 */
+#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function openGeoLink(mixed $url): TemplateResponse {
 		return $this->index();
 	}
