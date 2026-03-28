@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -23,7 +23,7 @@ use Symfony\Component\Console\Input\InputInterface;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RescanTracks extends Command {
+final class RescanTracks extends Command {
 
 	protected IUserManager $userManager;
 	protected OutputInterface $output;
