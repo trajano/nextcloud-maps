@@ -17,33 +17,33 @@ use OCP\App\IAppManager;
 use OCP\AppFramework\ApiController;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http\Response;
 use OCP\IConfig;
+use OCP\Files\Folder;
+use OCP\Files\IRootFolder;
 use OCP\IGroupManager;
 use OCP\IL10N;
 use OCP\IRequest;
-use OCP\IServerContainer;
 use OCP\IUserManager;
 use OCP\Share\IManager;
 
 final class DevicesApiController extends ApiController {
 
-	private $userId;
-	private $userfolder;
-	private $config;
-	private $appVersion;
-	private $shareManager;
-	private $userManager;
-	private $groupManager;
-	private $dbtype;
-	private $dbdblquotes;
-	private $defaultDeviceId;
-	private $l;
-	private $devicesService;
+	private string $userId;
+	private ?Folder $userfolder = null;
+	private IConfig $config;
+	private IManager $shareManager;
+	private IUserManager $userManager;
+	private IGroupManager $groupManager;
+	private mixed $dbdblquotes = null;
+	private mixed $defaultDeviceId = null;
+	private IL10N $l;
+	private DevicesService $devicesService;
 	protected $appName;
 
-	public function __construct($AppName,
+	public function __construct(string $AppName,
 		IRequest $request,
-		IServerContainer $serverContainer,
+		IRootFolder $rootFolder,
 		IConfig $config,
 		IManager $shareManager,
 		IAppManager $appManager,
@@ -51,24 +51,22 @@ final class DevicesApiController extends ApiController {
 		IGroupManager $groupManager,
 		IL10N $l,
 		DevicesService $devicesService,
-		$UserId) {
+		string $UserId) {
 		parent::__construct($AppName, $request,
 			'PUT, POST, GET, DELETE, PATCH, OPTIONS',
 			'Authorization, Content-Type, Accept',
 			1728000);
 		$this->devicesService = $devicesService;
 		$this->appName = $AppName;
-		$this->appVersion = $config->getAppValue('maps', 'installed_version');
 		$this->userId = $UserId;
 		$this->userManager = $userManager;
 		$this->groupManager = $groupManager;
 		$this->l = $l;
-		$this->dbtype = $config->getSystemValue('dbtype');
 		// IConfig object
 		$this->config = $config;
-		if ($UserId !== '' and $UserId !== null and $serverContainer !== null) {
+		if ($UserId !== '') {
 			// path of user files folder relative to DATA folder
-			$this->userfolder = $serverContainer->getUserFolder($UserId);
+			$this->userfolder = $rootFolder->getUserFolder($UserId);
 		}
 		$this->shareManager = $shareManager;
 	}
@@ -77,15 +75,14 @@ final class DevicesApiController extends ApiController {
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 * @CORS
-	 * @param $apiversion
-	 * @return DataResponse
+	 * @param string|int $apiversion
 	 */
-	public function getDevices($apiversion): DataResponse {
+	public function getDevices(string|int $apiversion): Response {
 		$now = new \DateTime();
 
 		$devices = $this->devicesService->getDevicesFromDB($this->userId);
 
-		$etag = md5(json_encode($devices));
+		$etag = md5((string)json_encode($devices));
 		if ($this->request->getHeader('If-None-Match') === '"' . $etag . '"') {
 			return new DataResponse([], Http::STATUS_NOT_MODIFIED);
 		}
@@ -101,14 +98,9 @@ final class DevicesApiController extends ApiController {
 	 *
 	 * @CORS
 	 *
-	 * @param $id
 	 * @param int $pruneBefore
-	 *
-	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
-	public function getDevicePoints($id, int $pruneBefore = 0): DataResponse {
+	public function getDevicePoints(int $id, int $pruneBefore = 0): DataResponse {
 		$points = $this->devicesService->getDevicePointsFromDB($this->userId, $id, $pruneBefore);
 		return new DataResponse($points);
 	}
@@ -120,20 +112,9 @@ final class DevicesApiController extends ApiController {
 	 *
 	 * @CORS
 	 *
-	 * @param $apiversion
-	 * @param $lat
-	 * @param $lng
-	 * @param $timestamp
-	 * @param $user_agent
-	 * @param $altitude
-	 * @param $battery
-	 * @param $accuracy
-	 *
-	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, array{deviceId: mixed, pointId: mixed}, array<never, never>>|DataResponse<400, mixed, array<never, never>>
+	 * @param string|int $apiversion
 	 */
-	public function addDevicePoint($apiversion, $lat, $lng, $timestamp = null, $user_agent = null, $altitude = null, $battery = null, $accuracy = null): DataResponse {
+	public function addDevicePoint(string|int $apiversion, mixed $lat, mixed $lng, mixed $timestamp = null, ?string $user_agent = null, mixed $altitude = null, mixed $battery = null, mixed $accuracy = null): DataResponse {
 		if (is_numeric($lat) and is_numeric($lng)) {
 			$timestamp = $this->normalizeOptionalNumber($timestamp);
 			$altitude = $this->normalizeOptionalNumber($altitude);
@@ -144,11 +125,11 @@ final class DevicesApiController extends ApiController {
 				$ts = (new \DateTime())->getTimestamp();
 			}
 			$ua = $user_agent;
-			if ($user_agent === null) {
-				$ua = $_SERVER['HTTP_USER_AGENT'];
+			if ($ua === null) {
+				$ua = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
 			}
 			$deviceId = $this->devicesService->getOrCreateDeviceFromDB($this->userId, $ua);
-			$pointId = $this->devicesService->addPointToDB($deviceId, $lat, $lng, $ts, $altitude, $battery, $accuracy);
+			$pointId = $this->devicesService->addPointToDB($deviceId, (float)$lat, (float)$lng, $ts, $altitude, $battery, $accuracy);
 			return new DataResponse([
 				'deviceId' => $deviceId,
 				'pointId' => $pointId
@@ -165,17 +146,11 @@ final class DevicesApiController extends ApiController {
 	 *
 	 * @CORS
 	 *
-	 * @param $id
-	 * @param $color
-	 *
-	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
-	public function editDevice($id, $color): DataResponse {
+	public function editDevice(int $id, string $color): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
-			if (is_string($color) && strlen($color) > 0) {
+			if (strlen($color) > 0) {
 				$this->devicesService->editDeviceInDB($id, $color, null);
 				$editedDevice = $this->devicesService->getDeviceFromDB($id, $this->userId);
 				return new DataResponse($editedDevice);
@@ -194,13 +169,8 @@ final class DevicesApiController extends ApiController {
 	 *
 	 * @CORS
 	 *
-	 * @param $id
-	 *
-	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
-	public function deleteDevice($id): DataResponse {
+	public function deleteDevice(int $id): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
 			$this->devicesService->deleteDeviceFromDB($id);
@@ -211,15 +181,13 @@ final class DevicesApiController extends ApiController {
 	}
 
 	/**
-	 * @param $value
-	 *
-	 * @return null|numeric
+	 * @return float|int|null
 	 */
-	private function normalizeOptionalNumber($value) {
+	private function normalizeOptionalNumber(mixed $value): float|int|null {
 		if (!is_numeric($value)) {
 			return null;
 		}
-		return $value;
+		return is_int($value) ? $value : (float)$value;
 	}
 
 }
