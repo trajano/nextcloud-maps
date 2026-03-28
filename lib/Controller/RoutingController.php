@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - Maps
@@ -25,7 +25,7 @@ use OCP\IServerContainer;
 use OCP\IUserManager;
 use OCP\Share\IManager;
 
-class RoutingController extends Controller {
+final class RoutingController extends Controller {
 
 	private $userId;
 	private $userfolder;
