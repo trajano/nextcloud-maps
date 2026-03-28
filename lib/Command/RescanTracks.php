@@ -60,6 +60,7 @@ final class RescanTracks extends Command {
 			$output->writeln('Encryption is enabled. Aborted.');
 			return 1;
 		}
+		/** @var string|null $userIdArgument */
 		$userIdArgument = $input->getArgument('user_id');
 		$userId = is_string($userIdArgument) ? $userIdArgument : null;
 		if ($userId === null) {
