@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - Maps
@@ -33,7 +33,7 @@ use OCP\Share\IManager;
 
 //use function \OCA\Maps\Service\endswith;
 
-class DevicesController extends Controller {
+final class DevicesController extends Controller {
 
 	private $userId;
 	private $userfolder;
