@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * @copyright Copyright (c) 2019, Paul Schwörer <hello@paulschwoerer.de>
@@ -35,7 +35,7 @@ use OCP\AppFramework\PublicShareController;
 use OCP\IRequest;
 use OCP\ISession;
 
-class PublicFavoritesApiController extends PublicShareController {
+final class PublicFavoritesApiController extends PublicShareController {
 	/* @var FavoritesService */
 	private $favoritesService;
 
