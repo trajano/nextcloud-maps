@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -24,7 +24,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RescanPhotos extends Command {
+final class RescanPhotos extends Command {
 
 	protected IUserManager $userManager;
 	protected OutputInterface $output;
