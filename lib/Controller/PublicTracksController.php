@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - Maps
@@ -33,7 +33,7 @@ use OCP\Share\IManager as ShareManager;
 
 use function OCA\Maps\Helper\remove_utf8_bom;
 
-class PublicTracksController extends PublicPageController {
+final class PublicTracksController extends PublicPageController {
 
 	protected IConfig $config;
 	protected ShareManager $shareManager;
