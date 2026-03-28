@@ -76,7 +76,7 @@ final class Application extends App implements IBootstrap {
 
 	public function boot(IBootContext $context): void {
 		$context->injectFn(Closure::fromCallable([$this, 'registerFileHooks']));
-		$this->registerFeaturePolicy();
+		$context->injectFn(Closure::fromCallable([$this, 'registerFeaturePolicy']));
 	}
 
 	private function registerFileHooks(
@@ -95,9 +95,7 @@ final class Application extends App implements IBootstrap {
 		$fileHooks->register();
 	}
 
-	private function registerFeaturePolicy(): void {
-		$dispatcher = $this->getContainer()->getServer()->get(IEventDispatcher::class);
-
+	private function registerFeaturePolicy(IEventDispatcher $dispatcher): void {
 		$dispatcher->addListener(AddFeaturePolicyEvent::class, function (AddFeaturePolicyEvent $e) {
 			$fp = new EmptyFeaturePolicy();
 			$fp->addAllowedGeoLocationDomain('\'self\'');
