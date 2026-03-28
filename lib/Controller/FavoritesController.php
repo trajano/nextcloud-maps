@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - Maps
@@ -105,9 +105,14 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param ?int $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, array, array<never, never>>
 	 */
 	public function getFavorites(?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -123,6 +128,7 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string|null $name
 	 * @param float $lat
 	 * @param float $lng
@@ -130,10 +136,14 @@ class FavoritesController extends Controller {
 	 * @param string|null $comment
 	 * @param string|null $extensions
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<400|404, string, array<never, never>>
 	 */
 	public function addFavorite(?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions, ?int $myMapId = null): DataResponse {
 		if (is_numeric($lat) && is_numeric($lng)) {
@@ -163,12 +173,17 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param array $favorites
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, list{0?: mixed,...}, array<never, never>>|DataResponse<400|404, 'Map not found'|'invalid values', array<never, never>>
 	 */
 	public function addFavorites(array $favorites, ?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -205,6 +220,7 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param int $id
 	 * @param string|null $name
 	 * @param float $lat
@@ -213,8 +229,12 @@ class FavoritesController extends Controller {
 	 * @param string|null $comment
 	 * @param string|null $extensions
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
 	public function editFavorite(int $id, ?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions, ?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -255,12 +275,17 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param array $categories
 	 * @param string $newName
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, 'RENAMED', array<never, never>>
 	 */
 	public function renameCategories(array $categories, string $newName, ?int $myMapId = null): DataResponse {
 		if (is_array($categories)) {
@@ -288,10 +313,15 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param int $id
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
 	public function deleteFavorite(int $id, ?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -313,10 +343,15 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param array $ids
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>
 	 */
 	public function deleteFavorites(array $ids, ?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -332,10 +367,15 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function getSharedCategories(?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -349,8 +389,12 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string $category
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<400|500, string, array<never, never>>
 	 */
 	public function shareCategory(string $category): DataResponse {
 		if ($this->favoritesService->countFavorites($this->userId, [$category], null, null) === 0) {
@@ -368,8 +412,12 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string $category
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, array{did_exist: mixed}, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
 	public function unShareCategory(string $category): DataResponse {
 		if ($this->favoritesService->countFavorites($this->userId, [$category], null, null) === 0) {
@@ -385,14 +433,19 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string $category
 	 * @param int $targetMapId
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws DoesNotExistException
 	 * @throws MultipleObjectsReturnedException
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return DataResponse<200|404, string, array<never, never>>
 	 */
 	public function addShareCategoryToMap(string $category, int $targetMapId, ?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -424,9 +477,13 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string $category
 	 * @param int $myMapId
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|500, 'Done'|'Failed', array<never, never>>
 	 */
 	public function removeShareCategoryFromMap(string $category, int $myMapId): DataResponse {
 		$d = $this->favoriteShareMapper->removeByMapIdAndCategory($this->userId, $myMapId, $category);
@@ -438,13 +495,18 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param array|null $categoryList
 	 * @param int|null $begin
 	 * @param int|null $end
 	 * @param bool $all
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
 	public function exportFavorites(?array $categoryList = null, ?int $begin = null, ?int $end = null, bool $all = false): DataResponse {
 		// sorry about ugly categoryList management:
@@ -501,10 +563,15 @@ class FavoritesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string $path
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
 	public function importFavorites(string $path): DataResponse {
 		$userFolder = $this->userFolder;

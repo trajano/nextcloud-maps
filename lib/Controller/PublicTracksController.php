@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - Maps
@@ -119,10 +119,14 @@ class PublicTracksController extends PublicPageController {
 
 	/**
 	 * @PublicPage
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return DataResponse<200, array, array<never, never>>
 	 */
 	public function getTracks(): DataResponse {
 		$share = $this->getShare();
@@ -151,13 +155,18 @@ class PublicTracksController extends PublicPageController {
 
 	/**
 	 * @PublicPage
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
-	public function getTrackContentByFileId($id) {
+	public function getTrackContentByFileId($id): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
 		$folder = $this->getShareNode();
@@ -194,10 +203,15 @@ class PublicTracksController extends PublicPageController {
 
 	/**
 	 * @PublicPage
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
 	public function getTrackFileContent($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id);
@@ -228,13 +242,18 @@ class PublicTracksController extends PublicPageController {
 
 	/**
 	 * @PublicPage
+	 *
 	 * @param $id
 	 * @param $color
 	 * @param $metadata
 	 * @param $etag
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
 	public function editTrack($id, $color, $metadata, $etag): DataResponse {
 		$share = $this->getShare();
@@ -257,8 +276,12 @@ class PublicTracksController extends PublicPageController {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
 	public function deleteTrack($id): DataResponse {
 		$share = $this->getShare();

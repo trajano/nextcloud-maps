@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -47,16 +47,22 @@ class PhotosController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @param null $myMapId
 	 * @param null $respectNoMediaAndNoimage
 	 * @param null $hideImagesOnCustomMaps
 	 * @param null $hideImagesInMapsFolder
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws Exception
 	 * @throws NoUserException
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function getPhotos($myMapId = null, $respectNoMediaAndNoimage = null, $hideImagesOnCustomMaps = null, $hideImagesInMapsFolder = null): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
@@ -72,7 +78,9 @@ class PhotosController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @param int|null $myMapId
 	 * @param string|null $timezone
 	 * @param int $limit
@@ -80,11 +88,15 @@ class PhotosController extends Controller {
 	 * @param null $respectNoMediaAndNoimage
 	 * @param null $hideImagesOnCustomMaps
 	 * @param null $hideImagesInMapsFolder
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws Exception
 	 * @throws NoUserException
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function getNonLocalizedPhotos(?int $myMapId = null, ?string $timezone = null, int $limit = 250, int $offset = 0, $respectNoMediaAndNoimage = null, $hideImagesOnCustomMaps = null, $hideImagesInMapsFolder = null): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
@@ -101,17 +113,22 @@ class PhotosController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $paths
 	 * @param $lats
 	 * @param $lngs
 	 * @param bool $directory
 	 * @param null $myMapId
 	 * @param bool $relative
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NoUserException
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<200|400, array<never, never>, array<never, never>>
 	 */
 	public function placePhotos($paths, $lats, $lngs, bool $directory = false, $myMapId = null, bool $relative = false): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
@@ -150,8 +167,12 @@ class PhotosController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $paths
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, array<never, never>|mixed, array<never, never>>
 	 */
 	public function resetPhotosCoords($paths, $myMapId = null): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
@@ -175,7 +196,10 @@ class PhotosController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400, 'Cache cleared'|'Failed to clear Cache', array<never, never>>
 	 */
 	public function clearCache(): DataResponse {
 		$result = $this->geophotoService->clearCache();
@@ -188,7 +212,10 @@ class PhotosController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function getBackgroundJobStatus(): DataResponse {
 		return new DataResponse($this->photofilesService->getBackgroundJobStatus($this->userId));

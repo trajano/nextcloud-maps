@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * @copyright Copyright (c) 2019, Paul Schwörer <hello@paulschwoerer.de>
@@ -55,12 +55,17 @@ class PublicFavoritesApiController extends PublicShareController {
 		$this->favoritesService = $favoritesService;
 	}
 
+	/**
+	 * @return string
+	 *
+	 * @psalm-return ''
+	 */
 	public function getPasswordHash(): string {
 		return '';
 	}
 
 	/**
-	 * @return bool
+	 * @return false
 	 */
 	protected function isPasswordProtected(): bool {
 		return false;
@@ -96,6 +101,8 @@ class PublicFavoritesApiController extends PublicShareController {
 	 * @PublicPage
 	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|404|500, array{share?: mixed, favorites?: mixed}, array<never, never>>
 	 */
 	public function getFavorites(): DataResponse {
 		try {

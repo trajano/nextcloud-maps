@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - Maps
@@ -96,11 +96,17 @@ class DevicesApiController extends ApiController {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @CORS
+	 *
 	 * @param $id
 	 * @param int $pruneBefore
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function getDevicePoints($id, int $pruneBefore = 0): DataResponse {
 		$points = $this->devicesService->getDevicePointsFromDB($this->userId, $id, $pruneBefore);
@@ -109,8 +115,11 @@ class DevicesApiController extends ApiController {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @CORS
+	 *
 	 * @param $apiversion
 	 * @param $lat
 	 * @param $lng
@@ -119,7 +128,10 @@ class DevicesApiController extends ApiController {
 	 * @param $altitude
 	 * @param $battery
 	 * @param $accuracy
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, array{deviceId: mixed, pointId: mixed}, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	public function addDevicePoint($apiversion, $lat, $lng, $timestamp = null, $user_agent = null, $altitude = null, $battery = null, $accuracy = null): DataResponse {
 		if (is_numeric($lat) and is_numeric($lng)) {
@@ -148,11 +160,17 @@ class DevicesApiController extends ApiController {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @CORS
+	 *
 	 * @param $id
 	 * @param $color
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	public function editDevice($id, $color): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
@@ -171,10 +189,16 @@ class DevicesApiController extends ApiController {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @CORS
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	public function deleteDevice($id): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
@@ -188,7 +212,8 @@ class DevicesApiController extends ApiController {
 
 	/**
 	 * @param $value
-	 * @return float|int|string|null
+	 *
+	 * @return null|numeric
 	 */
 	private function normalizeOptionalNumber($value) {
 		if (!is_numeric($value)) {

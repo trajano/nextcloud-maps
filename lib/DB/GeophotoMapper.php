@@ -3,7 +3,7 @@
 /**
  * Nextcloud - maps
  *
- * This file is licensed under the Affero General Public License version 3 or
+ * Thifinal s file is licensed under the Affero General Public License version 3 or
  * later. See the COPYING file.
  *
  * @author Piotr Bator <prbator@gmail.com>
@@ -87,10 +87,14 @@ class GeophotoMapper extends QBMapper {
 	 * @param $userId
 	 * @param $limit
 	 * @param $offset
-	 * @return array|\OCP\AppFramework\Db\Entity[]
+	 *
+	 * @return Geophoto[]
+	 *
 	 * @throws \OCP\DB\Exception
+	 *
+	 * @psalm-return list<OCA\Maps\DB\Geophoto>
 	 */
-	public function findAll($userId, $limit = null, $offset = null) {
+	public function findAll($userId, $limit = null, $offset = null): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -115,10 +119,14 @@ class GeophotoMapper extends QBMapper {
 	 * @param $userId
 	 * @param $limit
 	 * @param $offset
-	 * @return array|\OCP\AppFramework\Db\Entity[]
+	 *
+	 * @return Geophoto[]
+	 *
 	 * @throws \OCP\DB\Exception
+	 *
+	 * @psalm-return list<OCA\Maps\DB\Geophoto>
 	 */
-	public function findAllNonLocalized($userId, $limit = null, $offset = null) {
+	public function findAllNonLocalized($userId, $limit = null, $offset = null): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')

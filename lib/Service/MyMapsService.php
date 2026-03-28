@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -87,7 +87,12 @@ class MyMapsService {
 		return $MyMap;
 	}
 
-	private function node2MyMap($node, $userFolder):array {
+	/**
+	 * @return ((mixed|string)[]|mixed|null)[]
+	 *
+	 * @psalm-return array{id: mixed, name: mixed, color: mixed|null, path: mixed, isShareable: mixed, isDeletable: mixed, isCreatable: mixed, isUpdateable: mixed, isReadable: mixed, fileInfo: array{id: mixed, name: '', basename: ''|mixed, filename: mixed, etag: mixed, permissions: mixed, type: mixed, mime: mixed, lastmod: mixed, path: mixed, sharePermissions: mixed}}
+	 */
+	private function node2MyMap(\OCP\Files\Node $node, Folder $userFolder):array {
 		$mapData = json_decode($node->getContent(), true);
 		if (isset($mapData['name'])) {
 			$name = $mapData['name'];
@@ -129,11 +134,15 @@ class MyMapsService {
 
 	/**
 	 * @param $userId
-	 * @return array
+	 *
+	 * @return array[]
+	 *
 	 * @throws NoUserException
 	 * @throws NotPermittedException
+	 *
+	 * @psalm-return list{0?: array,...}
 	 */
-	public function getAllMyMaps($userId) {
+	public function getAllMyMaps($userId): array {
 		$userFolder = $this->root->getUserFolder($userId);
 		$MyMaps = [];
 		$MyMapsNodes = $userFolder->search(new SearchQuery(
@@ -213,7 +222,7 @@ class MyMapsService {
 		return $mapData;
 	}
 
-	public function deleteMyMap($id, $userId) {
+	public function deleteMyMap($id, $userId): int {
 		$userFolder = $this->root->getUserFolder($userId);
 
 		$folders = $userFolder->getById($id);

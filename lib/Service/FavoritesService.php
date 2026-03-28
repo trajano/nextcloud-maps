@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -57,9 +57,12 @@ class FavoritesService {
 	 * @param string $userId
 	 * @param int $pruneBefore
 	 * @param string|null $filterCategory
-	 * @return array with favorites
+	 *
+	 * @return (float|int|mixed)[][] with favorites
+	 *
+	 * @psalm-return list{0?: array{id: int, name: mixed, date_modified: int, date_created: int, lat: float, lng: float, category: mixed, comment: mixed, extensions: mixed, isDeletable: mixed, isUpdateable: mixed, isShareable: mixed},...}
 	 */
-	public function getFavoritesFromDB($userId, $pruneBefore = 0, $filterCategory = null, $isDeletable = true, $isUpdateable = true, $isShareable = true) {
+	public function getFavoritesFromDB($userId, $pruneBefore = 0, $filterCategory = null, $isDeletable = true, $isUpdateable = true, $isShareable = true): array {
 		$favorites = [];
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'name', 'date_created', 'date_modified', 'lat', 'lng', 'category', 'comment', 'extensions')
@@ -109,7 +112,14 @@ class FavoritesService {
 		return $favorites;
 	}
 
-	public function getFavoriteFromDB($id, $userId = null, $category = null, $isDeletable = true, $isUpdateable = true, $isShareable = true) {
+	/**
+	 * @param null|string $userId
+	 *
+	 * @return (float|int|mixed)[]|null
+	 *
+	 * @psalm-return array{id: int, name: mixed, date_modified: int, date_created: int, lat: float, lng: float, category: mixed, comment: mixed, extensions: mixed, isDeletable: mixed, isUpdateable: mixed, isShareable: mixed}|null
+	 */
+	public function getFavoriteFromDB(int $id, string|null $userId = null, $category = null, $isDeletable = true, $isUpdateable = true, $isShareable = true): array|null {
 		$favorite = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'name', 'date_modified', 'date_created', 'lat', 'lng', 'category', 'comment', 'extensions')
@@ -160,7 +170,7 @@ class FavoritesService {
 		return $favorite;
 	}
 
-	public function addFavoriteToDB($userId, $name, $lat, $lng, $category, $comment, $extensions) {
+	public function addFavoriteToDB(string $userId, string|null $name, $lat, float $lng, string|null $category, string|null $comment, string|null $extensions): int {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->insert('maps_favorites')
@@ -180,7 +190,7 @@ class FavoritesService {
 		return $favoriteId;
 	}
 
-	public function addMultipleFavoritesToDB($userId, $favoriteList) {
+	public function addMultipleFavoritesToDB($userId, array $favoriteList): void {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 
 		$qb = $this->dbconnection->getQueryBuilder();
@@ -229,7 +239,7 @@ class FavoritesService {
 		}
 	}
 
-	public function renameCategoryInDB($userId, $cat, $newName) {
+	public function renameCategoryInDB(string $userId, $cat, string $newName): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->update('maps_favorites');
 		$qb->set('category', $qb->createNamedParameter($newName, IQueryBuilder::PARAM_STR));
@@ -242,7 +252,7 @@ class FavoritesService {
 		$qb->executeStatement();
 	}
 
-	public function editFavoriteInDB($id, $name, $lat, $lng, $category, $comment, $extensions) {
+	public function editFavoriteInDB(int $id, string|null $name, float|null $lat, float|null $lng, string|null $category, string|null $comment, string|null $extensions): void {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->update('maps_favorites');
@@ -271,7 +281,7 @@ class FavoritesService {
 		$qb->executeStatement();
 	}
 
-	public function deleteFavoriteFromDB($id) {
+	public function deleteFavoriteFromDB(int $id): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->delete('maps_favorites')
 			->where(
@@ -280,7 +290,10 @@ class FavoritesService {
 		$qb->executeStatement();
 	}
 
-	public function deleteFavoritesFromDB($ids, $userId) {
+	/**
+	 * @return void
+	 */
+	public function deleteFavoritesFromDB(array $ids, string $userId) {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->delete('maps_favorites')
 			->where(
@@ -298,7 +311,7 @@ class FavoritesService {
 		$qb->executeStatement();
 	}
 
-	public function countFavorites($userId, $categoryList, $begin, $end) {
+	public function countFavorites(string $userId, array|null $categoryList, int|null $begin, int|null $end): int {
 		if ($categoryList === null
 			or (is_array($categoryList) and count($categoryList) === 0)
 		) {
@@ -344,10 +357,14 @@ class FavoritesService {
 
 	/**
 	 * @param $file
-	 * @return array
+	 *
+	 * @return (array|false|float|int|mixed|string)[][]
+	 *
 	 * @throws \Exception
+	 *
+	 * @psalm-return list{0?: array{id?: array|false|float|int|mixed, isDeletable?: array|false|float|int|mixed, isUpdateable?: array|false|float|int|mixed, isShareable?: array|false|float|int|mixed, extensions: array, lng?: array|false|float|int|mixed, lat?: array|false|float|int|mixed, comment: array|false|float|int|mixed|string, category: array|false|float|int|mixed|string, date_modified?: array|false|float|int|mixed, date_created?: array|false|float|int|mixed, name?: array|false|float|int|mixed,...},...}
 	 */
-	public function getFavoritesFromJSON($file) {
+	public function getFavoritesFromJSON($file): array {
 		$favorites = [];
 
 		// Decode file content from JSON
@@ -419,7 +436,7 @@ class FavoritesService {
 		return $favorites;
 	}
 
-	public function getFavoriteFromJSON($file, $id) {
+	public function getFavoriteFromJSON($file, int $id) {
 		$favorites = $this->getFavoritesFromJSON($file);
 		if (array_key_exists($id, $favorites)) {
 			return $favorites[$id];
@@ -428,7 +445,12 @@ class FavoritesService {
 		}
 	}
 
-	private function addFavoriteToJSONData($data, $name, $lat, $lng, $category, $comment, $extensions, $nowTimeStamp) {
+	/**
+	 * @return (int|mixed)[]
+	 *
+	 * @psalm-return array{id: int, data: mixed}
+	 */
+	private function addFavoriteToJSONData($data, $name, $lat, $lng, $category, $comment, $extensions, int $nowTimeStamp): array {
 		$favorite = [
 			'type' => 'Feature',
 			'geometry' => [
@@ -458,7 +480,13 @@ class FavoritesService {
 		];
 	}
 
-	public function addFavoriteToJSON($file, $name, $lat, $lng, $category, $comment, $extensions) {
+	/**
+	 * @param null|string $name
+	 * @param null|string $category
+	 * @param null|string $comment
+	 * @param null|string $extensions
+	 */
+	public function addFavoriteToJSON($file, string|null $name, float $lat, float $lng, string|null $category, string|null $comment, string|null $extensions) {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$data = json_decode($file->getContent(), true, 512);
 
@@ -468,7 +496,10 @@ class FavoritesService {
 		return $tmp['id'];
 	}
 
-	public function addFavoritesToJSON($file, $favorites) {
+	/**
+	 * @psalm-return list{0?: mixed,...}
+	 */
+	public function addFavoritesToJSON($file, array $favorites): array {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$data = json_decode($file->getContent(), true, 512);
 		$ids = [];
@@ -481,7 +512,7 @@ class FavoritesService {
 		return $ids;
 	}
 
-	public function renameCategoryInJSON($file, $cat, $newName) {
+	public function renameCategoryInJSON($file, $cat, string $newName): void {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$data = json_decode($file->getContent(), true, 512);
 		$this->logger->debug($cat);
@@ -498,7 +529,7 @@ class FavoritesService {
 		$file->putContent(json_encode($data, JSON_PRETTY_PRINT));
 	}
 
-	public function editFavoriteInJSON($file, $id, $name, $lat, $lng, $category, $comment, $extensions) {
+	public function editFavoriteInJSON($file, int $id, string|null $name, float|null $lat, float|null $lng, string|null $category, string|null $comment, string|null $extensions): void {
 		$nowTimeStamp = (new \DateTime())->getTimestamp();
 		$data = json_decode($file->getContent(), true, 512);
 		$createdTimeStamp = $data['features'][$id]['properties']['Published'];
@@ -530,7 +561,10 @@ class FavoritesService {
 		$file->putContent(json_encode($data, JSON_PRETTY_PRINT));
 	}
 
-	public function deleteFavoriteFromJSON($file, $id): int {
+	/**
+	 * @psalm-return int<min, max>
+	 */
+	public function deleteFavoriteFromJSON($file, int $id): int {
 		$data = json_decode($file->getContent(), true, 512);
 		$countBefore = count($data['features']);
 		array_splice($data['features'], $id, 1);
@@ -538,7 +572,7 @@ class FavoritesService {
 		return $countBefore - count($data['features']);
 	}
 
-	public function deleteFavoritesFromJSON($file, $ids) {
+	public function deleteFavoritesFromJSON($file, array $ids): void {
 		$data = json_decode($file->getContent(), true, 512);
 		foreach ($ids as $id) {
 			array_splice($data['features'], $id, 1);
@@ -546,7 +580,7 @@ class FavoritesService {
 		$file->putContent(json_encode($data, JSON_PRETTY_PRINT));
 	}
 
-	public function exportFavorites($userId, $fileHandler, $categoryList, $begin, $end, $appVersion) {
+	public function exportFavorites(string $userId, $fileHandler, array|null $categoryList, int|null $begin, int|null $end, string $appVersion): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$nbFavorites = $this->countFavorites($userId, $categoryList, $begin, $end);
 
@@ -639,7 +673,7 @@ class FavoritesService {
 		fwrite($fileHandler, $gpxEnd);
 	}
 
-	public function importFavorites($userId, $file) {
+	public function importFavorites(string $userId, \OCP\Files\Node $file) {
 		$lowerFileName = strtolower($file->getName());
 		if ($this->endswith($lowerFileName, '.gpx')) {
 			return $this->importFavoritesFromGpx($userId, $file);
@@ -672,7 +706,14 @@ class FavoritesService {
 		return $result;
 	}
 
-	public function importFavoritesFromKml($userId, $fp, $name) {
+	/**
+	 * @param bool|resource $fp
+	 *
+	 * @return (false|int)[]|int
+	 *
+	 * @psalm-return 0|array{nbImported: 0, linesFound: false}
+	 */
+	public function importFavoritesFromKml($userId, $fp, $name): array|int {
 		$this->nbImported = 0;
 		$this->linesFound = false;
 		$this->currentFavoritesList = [];
@@ -706,7 +747,7 @@ class FavoritesService {
 		];
 	}
 
-	private function kmlStartElement($parser, $name, $attrs) {
+	private function kmlStartElement($parser, $name, $attrs): void {
 		$this->currentXmlTag = $name;
 		if ($name === 'PLACEMARK') {
 			$this->currentFavorite = [];
@@ -717,7 +758,7 @@ class FavoritesService {
 		}
 	}
 
-	private function kmlEndElement($parser, $name) {
+	private function kmlEndElement($parser, $name): void {
 		if ($name === 'KML') {
 			// create last bunch
 			if (count($this->currentFavoritesList) > 0) {
@@ -755,7 +796,7 @@ class FavoritesService {
 		}
 	}
 
-	private function kmlDataElement($parser, $data) {
+	private function kmlDataElement($parser, $data): void {
 		$d = trim($data);
 		if (!empty($d)) {
 			if (!$this->kmlInsidePlacemark) {
@@ -776,7 +817,12 @@ class FavoritesService {
 		}
 	}
 
-	public function importFavoritesFromGpx($userId, $file) {
+	/**
+	 * @return (false|int)[]|int
+	 *
+	 * @psalm-return 0|array{nbImported: 0, linesFound: false}
+	 */
+	public function importFavoritesFromGpx($userId, $file): array|int {
 		$this->nbImported = 0;
 		$this->linesFound = false;
 		$this->currentFavoritesList = [];
@@ -811,7 +857,7 @@ class FavoritesService {
 		];
 	}
 
-	private function gpxStartElement($parser, $name, $attrs) {
+	private function gpxStartElement($parser, $name, $attrs): void {
 		$this->currentXmlTag = $name;
 		if ($name === 'WPT') {
 			$this->insideWpt = true;
@@ -828,7 +874,7 @@ class FavoritesService {
 		}
 	}
 
-	private function gpxEndElement($parser, $name) {
+	private function gpxEndElement($parser, $name): void {
 		if ($name === 'GPX') {
 			// create last bunch
 			if (count($this->currentFavoritesList) > 0) {
@@ -858,7 +904,7 @@ class FavoritesService {
 		}
 	}
 
-	private function gpxDataElement($parser, $data) {
+	private function gpxDataElement($parser, $data): void {
 		$d = trim($data);
 		if (!empty($d)) {
 			if ($this->insideWpt and $this->currentXmlTag === 'NAME') {
@@ -875,7 +921,12 @@ class FavoritesService {
 		}
 	}
 
-	public function importFavoritesFromGeoJSON($userId, $file) {
+	/**
+	 * @return (bool|int)[]
+	 *
+	 * @psalm-return array{nbImported: 0|1|2, linesFound: bool}
+	 */
+	public function importFavoritesFromGeoJSON($userId, $file): array {
 		$this->nbImported = 0;
 		$this->linesFound = false;
 		$this->currentFavoritesList = [];
@@ -944,7 +995,7 @@ class FavoritesService {
 		];
 	}
 
-	private function endswith($string, $test) {
+	private function endswith(string $string, string $test): bool {
 		$strlen = strlen($string);
 		$testlen = strlen($test);
 		if ($testlen > $strlen) {

@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 namespace OCA\Maps\Migration;
 
@@ -15,11 +15,16 @@ class UnregisterMimeType implements IRepairStep {
 		$this->mimeTypeLoader = $mimeTypeLoader;
 	}
 
+	/**
+	 * @return string
+	 *
+	 * @psalm-return 'Unregister Maps MIME types'
+	 */
 	public function getName() {
 		return 'Unregister Maps MIME types';
 	}
 
-	private function unregisterForExistingFiles() {
+	private function unregisterForExistingFiles(): void {
 		$mimeTypeId = $this->mimeTypeLoader->getId('application/octet-stream');
 		$this->mimeTypeLoader->updateFilecache('maps', $mimeTypeId);
 		$this->mimeTypeLoader->updateFilecache('noindex', $mimeTypeId);
@@ -28,7 +33,7 @@ class UnregisterMimeType implements IRepairStep {
 		$this->mimeTypeLoader->updateFilecache('notrack', $mimeTypeId);
 	}
 
-	private function unregisterForNewFiles() {
+	private function unregisterForNewFiles(): void {
 		$mappingFile = \OC::$configDir . self::CUSTOM_MIMETYPEMAPPING;
 
 		if (file_exists($mappingFile)) {
@@ -46,6 +51,9 @@ class UnregisterMimeType implements IRepairStep {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(IOutput $output) {
 		$output->info('Unregistering the mimetype...');
 

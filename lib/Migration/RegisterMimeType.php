@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 namespace OCA\Maps\Migration;
 
@@ -15,11 +15,16 @@ class RegisterMimeType implements IRepairStep {
 		$this->mimeTypeLoader = $mimeTypeLoader;
 	}
 
+	/**
+	 * @return string
+	 *
+	 * @psalm-return 'Register Maps MIME types'
+	 */
 	public function getName() {
 		return 'Register Maps MIME types';
 	}
 
-	private function registerForExistingFiles() {
+	private function registerForExistingFiles(): void {
 		$mimeTypeId = $this->mimeTypeLoader->getId('application/x-nextcloud-maps');
 		$this->mimeTypeLoader->updateFilecache('maps', $mimeTypeId);
 
@@ -36,7 +41,7 @@ class RegisterMimeType implements IRepairStep {
 		$this->mimeTypeLoader->updateFilecache('notrack', $mimeTypeId);
 	}
 
-	private function registerForNewFiles() {
+	private function registerForNewFiles(): void {
 		$mapping = [
 			'maps' => ['application/x-nextcloud-maps'],
 			'noindex' => ['application/x-nextcloud-noindex'],
@@ -56,6 +61,9 @@ class RegisterMimeType implements IRepairStep {
 		file_put_contents($mappingFile, json_encode($mapping, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(IOutput $output) {
 		$output->info('Registering the mimetype...');
 

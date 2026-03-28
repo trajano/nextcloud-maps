@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - Maps
@@ -70,9 +70,13 @@ class TracksController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function getTracks($myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -87,8 +91,10 @@ class TracksController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
+	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
-	public function getTrackContentByFileId($id) {
+	public function getTrackContentByFileId($id): DataResponse {
 		$track = $this->tracksService->getTrackByFileIDFromDB($id, $this->userId);
 		$res = is_null($track) ? null : $this->userfolder->getById($track['file_id']);
 		if (is_array($res) and count($res) > 0) {
@@ -117,10 +123,15 @@ class TracksController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
+	 *
+	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	public function getTrackFileContent($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id);
@@ -151,11 +162,15 @@ class TracksController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $id
 	 * @param $color
 	 * @param $metadata
 	 * @param $etag
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, 'EDITED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	public function editTrack($id, $color, $metadata, $etag): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id, $this->userId);
@@ -169,8 +184,12 @@ class TracksController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	public function deleteTrack($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id, $this->userId);

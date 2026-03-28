@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * @copyright Copyright (c) 2019, Paul Schwörer <hello@paulschwoerer.de>
@@ -62,9 +62,12 @@ class PublicFavoritePageController extends PublicShareController {
 	 * @return DataResponse|PublicTemplateResponse
 	 *
 	 * @PublicPage
+	 *
 	 * @NoCSRFRequired
+	 *
+	 * @psalm-return DataResponse<400|404|500, array<never, never>, array<never, never>>|PublicTemplateResponse<array<never, never>, 200>
 	 */
-	public function sharedFavoritesCategory($token) {
+	public function sharedFavoritesCategory($token): PublicTemplateResponse|DataResponse {
 		if ($token === '') {
 			return new DataResponse([], Http::STATUS_BAD_REQUEST);
 		}
@@ -93,12 +96,17 @@ class PublicFavoritePageController extends PublicShareController {
 	}
 
 	/**
+	 *
 	 * Get a hash of the password for this share
 	 *
 	 * To ensure access is blocked when the password to a share is changed we store
 	 * a hash of the password for this token.
 	 *
 	 * @since 14.0.0
+	 *
+	 * @return string
+	 *
+	 * @psalm-return ''
 	 */
 	protected function getPasswordHash(): string {
 		return '';
@@ -123,9 +131,11 @@ class PublicFavoritePageController extends PublicShareController {
 	}
 
 	/**
+	 *
 	 * Is a share with this token password protected
 	 *
-	 * @return bool
+	 * @return false
+	 *
 	 * @since 14.0.0
 	 */
 	protected function isPasswordProtected(): bool {
@@ -134,9 +144,12 @@ class PublicFavoritePageController extends PublicShareController {
 
 	/**
 	 * @param $response
+	 *
 	 * @return void
+	 *
+	 * @psalm-param PublicTemplateResponse<array, 200> $response
 	 */
-	private function addCsp($response): void {
+	private function addCsp(PublicTemplateResponse $response): void {
 		if (class_exists('OCP\AppFramework\Http\ContentSecurityPolicy')) {
 			$csp = new ContentSecurityPolicy();
 			// map tiles

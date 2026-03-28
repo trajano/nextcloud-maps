@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - Maps
@@ -89,9 +89,13 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param ?string[] $tokens
 	 * @param ?int $myMapId
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, list<value-of<array>>, array<never, never>>|DataResponse<404, mixed, array<never, never>>
 	 */
 	public function getDevices($tokens = null, $myMapId = null): DataResponse {
 		if (is_null($tokens)) {
@@ -123,8 +127,12 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string[] $tokens
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, list<value-of<array>>, array<never, never>>
 	 */
 	public function getDevicesByTokens(array $tokens): DataResponse {
 		$devices = $this->devicesService->getDevicesByTokens($tokens);
@@ -133,9 +141,13 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $id
 	 * @param int $pruneBefore
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function getDevicePoints($id, ?int $pruneBefore = 0, ?int $limit = 10000, ?int $offset = 0, ?array $tokens = null): DataResponse {
 		if (is_null($tokens)) {
@@ -148,6 +160,7 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $lat
 	 * @param $lng
 	 * @param null $timestamp
@@ -155,7 +168,10 @@ class DevicesController extends Controller {
 	 * @param null $altitude
 	 * @param null $battery
 	 * @param null $accuracy
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, array{deviceId: mixed, pointId: mixed}, array<never, never>>|DataResponse<400, 'Invalid values', array<never, never>>
 	 */
 	public function addDevicePoint($lat, $lng, $timestamp = null, $user_agent = null, $altitude = null, $battery = null, $accuracy = null): DataResponse {
 		if (is_numeric($lat) and is_numeric($lng)) {
@@ -180,10 +196,14 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $id
 	 * @param $color
 	 * @param $name
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	public function editDevice($id, $color, $name): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
@@ -204,8 +224,12 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	public function deleteDevice($id): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
@@ -220,12 +244,16 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param ?array $deviceIdList
 	 * @param int $begin
 	 * @param int $end
 	 * @param bool $all=false
+	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, string, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	public function exportDevices($deviceIdList, $begin, $end, bool $all = false): DataResponse {
 		// sorry about ugly deviceIdList management:
@@ -277,10 +305,15 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $path
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
+	 *
+	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	public function importDevices($path): DataResponse {
 		$userFolder = $this->userfolder;
@@ -311,9 +344,12 @@ class DevicesController extends Controller {
 	/**
 	 * @param $string
 	 * @param $test
+	 *
 	 * @return bool
+	 *
+	 * @psalm-param '.gpx'|'.kml'|'.kmz' $test
 	 */
-	private function endsWith($string, $test): bool {
+	private function endsWith(string $string, string $test): bool {
 		$strlen = strlen($string);
 		$testlen = strlen($test);
 		if ($testlen > $strlen) {
@@ -324,10 +360,15 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return DataResponse<200, array<never, never>|mixed, array<never, never>>
 	 */
 	public function getSharedDevices(?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -343,10 +384,14 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param int $id
 	 * @param int $timestampFrom
 	 * @param int $timestampTo
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400|500, mixed, array<never, never>>
 	 */
 	public function shareDevice(int $id, int $timestampFrom, int $timestampTo): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
@@ -365,10 +410,15 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param int $token
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotPermittedException
 	 * @throws NotFoundException
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function removeDeviceShare(int $token): DataResponse {
 		try {
@@ -386,10 +436,15 @@ class DevicesController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string $token
 	 * @param $targetMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
+	 *
+	 * @psalm-return DataResponse<200, 'Done', array<never, never>>|DataResponse<200|404, mixed, array<never, never>>
 	 */
 	public function addSharedDeviceToMap(string $token, $targetMapId): DataResponse {
 		try {
@@ -418,6 +473,9 @@ class DevicesController extends Controller {
 		return new DataResponse('Done');
 	}
 
+	/**
+	 * @psalm-return DataResponse<200|500, 'Done'|'Failed', array<never, never>>|DataResponse<404, mixed, array<never, never>>
+	 */
 	public function removeSharedDeviceFromMap(string $token, int $myMapId): DataResponse {
 		$folders = $this->userfolder->getById($myMapId);
 		$folder = array_shift($folders);

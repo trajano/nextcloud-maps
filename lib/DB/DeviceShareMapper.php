@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright Copyright (c) 2019, Paul Schwörer <hello@paulschwoerer.de>
+ * @copyright Copyright (c) 2019, final Paul Schwörer <hello@paulschwoerer.de>
  *
  * @author Paul Schwörer <hello@paulschwoerer.de>
  *
@@ -51,11 +51,11 @@ class DeviceShareMapper extends QBMapper {
 
 	/**
 	 * @param string $token
-	 * @return DeviceShare|null
+	 *
 	 * @throws DoesNotExistException
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function findByToken($token) {
+	public function findByToken($token): DeviceShare {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -69,10 +69,14 @@ class DeviceShareMapper extends QBMapper {
 
 	/**
 	 * @param string[] $token
-	 * @return DeviceShare[]|null
+	 *
+	 * @return DeviceShare[]
+	 *
 	 * @throws DoesNotExistException
+	 *
+	 * @psalm-return list<OCA\Maps\DB\DeviceShare>
 	 */
-	public function findByTokens($tokens) {
+	public function findByTokens($tokens): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -108,10 +112,14 @@ class DeviceShareMapper extends QBMapper {
 
 	/**
 	 * @param $deviceId
+	 *
 	 * @return DeviceShare[]
+	 *
 	 * @throws DoesNotExistException
+	 *
+	 * @psalm-return list<OCA\Maps\DB\DeviceShare>
 	 */
-	public function findByDeviceId($deviceId) {
+	public function findByDeviceId($deviceId): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -125,9 +133,12 @@ class DeviceShareMapper extends QBMapper {
 
 	/**
 	 * @param $deviceIds
+	 *
 	 * @return DeviceShare[]
+	 *
+	 * @psalm-return list<OCA\Maps\DB\DeviceShare>
 	 */
-	public function findByDeviceIds($deviceIds) {
+	public function findByDeviceIds($deviceIds): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -184,12 +195,12 @@ class DeviceShareMapper extends QBMapper {
 
 	/**
 	 * @param $id
-	 * @return DeviceShare|null
+	 *
 	 * @throws DoesNotExistException
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function findById($id) {
+	public function findById($id): DeviceShare {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')

@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -59,7 +59,7 @@ class UserInstallScanJob extends QueuedJob {
 		$this->config->setUserValue($userId, 'maps', 'installScanDone', 'yes');
 	}
 
-	private function rescanUserPhotos($userId) {
+	private function rescanUserPhotos($userId): void {
 		//$this->output->info('======== User '.$userId.' ========'."\n");
 		$c = 1;
 		foreach ($this->photofilesService->rescan($userId) as $path) {
@@ -68,7 +68,7 @@ class UserInstallScanJob extends QueuedJob {
 		}
 	}
 
-	private function rescanUserTracks($userId) {
+	private function rescanUserTracks($userId): void {
 		//$this->output->info('======== User '.$userId.' ========'."\n");
 		$c = 1;
 		foreach ($this->tracksService->rescan($userId) as $path) {

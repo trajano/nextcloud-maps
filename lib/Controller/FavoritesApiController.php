@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - Maps
@@ -96,8 +96,11 @@ class FavoritesApiController extends ApiController {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @CORS
+	 *
 	 * @param $apiversion
 	 * @param $name
 	 * @param $lat
@@ -105,7 +108,10 @@ class FavoritesApiController extends ApiController {
 	 * @param $category
 	 * @param $comment
 	 * @param $extensions
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	public function addFavorite($apiversion, $name, $lat, $lng, $category, $comment, $extensions): DataResponse {
 		if (is_numeric($lat) && is_numeric($lng)) {
@@ -119,8 +125,11 @@ class FavoritesApiController extends ApiController {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @CORS
+	 *
 	 * @param $id
 	 * @param $name
 	 * @param $lat
@@ -128,7 +137,10 @@ class FavoritesApiController extends ApiController {
 	 * @param $category
 	 * @param $comment
 	 * @param $extensions
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	public function editFavorite($id, $name, $lat, $lng, $category, $comment, $extensions): DataResponse {
 		$favorite = $this->favoritesService->getFavoriteFromDB($id, $this->userId);
@@ -149,10 +161,16 @@ class FavoritesApiController extends ApiController {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @CORS
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	public function deleteFavorite($id): DataResponse {
 		$favorite = $this->favoritesService->getFavoriteFromDB($id, $this->userId);

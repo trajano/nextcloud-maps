@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - Maps
@@ -34,6 +34,8 @@ class MyMapsController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function addMyMap(array $values): DataResponse {
 		$newName = $values['newName'] ?? 'New Map';
@@ -46,6 +48,8 @@ class MyMapsController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function updateMyMap(int $id, array $values): DataResponse {
 		$myMap = $this->myMapsService->updateMyMap($id, $values, $this->userId);
@@ -54,6 +58,8 @@ class MyMapsController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function deleteMyMap(int $id): DataResponse {
 		$result = $this->myMapsService->deleteMyMap($id, $this->userId);
@@ -62,6 +68,8 @@ class MyMapsController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
+	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	public function getMyMaps(): DataResponse {
 		$myMaps = $this->myMapsService->getAllMyMaps($this->userId);

@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -74,22 +74,37 @@ class ContactsController extends Controller {
 		$this->geoDistanceMax = 5;
 	}
 	/**
+	 *
 	 * Converts a geo string as a float array
+	 *
 	 * @param string formatted as "lat;lon"
+	 *
 	 * @return float[] array containing [lat;lon]
+	 *
+	 * @psalm-return non-empty-list<float>
 	 */
-	private function geoAsFloatArray($geo) {
+	private function geoAsFloatArray($geo): array {
 		$res = array_map(function ($value) {return floatval($value);}, explode(';', $geo));
 		return $res;
 	}
 
 	/**
+	 *
 	 * check if geographical address is duplicated
+	 *
 	 * @param array containing contact's previous different addresses
 	 * @param contact's address to check
-	 * @return integer : -1 if address is new, index of duplicated address in other cases
+	 * @param float[][] $prevGeo
+	 * @param float[] $geo
+	 *
+	 * @return int if address is new, index of duplicated address in other cases
+	 *
+	 * @psalm-param list{0?: array<float>,...} $prevGeo
+	 * @psalm-param array<float> $geo
+	 *
+	 * @psalm-return int<-1, max>
 	 */
-	private function isNewAddress($prevGeo, $geo) {
+	private function isNewAddress(array $prevGeo, array $geo): int {
 		if (empty($geo)) { // Address not converted to geo coords
 			return -1;
 		}
@@ -130,13 +145,19 @@ class ContactsController extends Controller {
 	}
 
 	/**
+	 *
 	 * get contacts with coordinates
 	 *
 	 * @NoAdminRequired
+	 *
 	 * @param null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return DataResponse<200, array<array>, array<never, never>>
 	 */
 	public function getContacts($myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -316,7 +337,7 @@ class ContactsController extends Controller {
 	 * @param $addressBookUri
 	 * @return string
 	 */
-	private function directUrlToContact($contactUid, $addressBookUri) {
+	private function directUrlToContact(string $contactUid, $addressBookUri) {
 		return $this->urlGenerator->getAbsoluteURL(
 			$this->urlGenerator->linkToRoute('contacts.contacts.direct', [
 				'contact' => $contactUid . '~' . $addressBookUri
@@ -331,9 +352,13 @@ class ContactsController extends Controller {
 	 * @param string|null $adrtype
 	 * @param string|null $adr
 	 * @param int|null $fileId
-	 * @return array
+	 *
+	 * @return (\Sabre\VObject\Property|bool|int|mixed|null|string)[]
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return array{FN: mixed|string, UID: mixed|null, HAS_PHOTO: bool, FILEID: int|null, ADR: string, ADRTYPE: string, PHOTO: ''|\Sabre\VObject\Property, GEO: string, GROUPS: string, isDeletable: bool, isUpdateable: bool}
 	 */
 	private function vCardToArray(Node $file, \Sabre\VObject\Document $vcard, string $geo, ?string $adrtype = null, ?string $adr = null, ?int $fileId = null): array {
 		$FNArray = $vcard->FN ? $vcard->FN->getJsonValue() : [];
@@ -374,9 +399,10 @@ class ContactsController extends Controller {
 
 	/**
 	 * @param string $n
-	 * @return string|null
+	 *
+	 * @return null|string
 	 */
-	private function N2FN(string $n): ?string {
+	private function N2FN(string $n): string|null {
 		if ($n) {
 			$spl = explode($n, ';');
 			if (count($spl) >= 4) {
@@ -390,11 +416,16 @@ class ContactsController extends Controller {
 	}
 
 	/**
+	 *
 	 * get all contacts
 	 *
 	 * @NoAdminRequired
+	 *
 	 * @param string $query
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, list{0?: array{FN: mixed|string, URI: mixed, UID: mixed, BOOKID: mixed, READONLY: ''|mixed, BOOKURI: mixed, HAS_PHOTO: bool, HAS_PHOTO2: bool},...}, array<never, never>>
 	 */
 	public function searchContacts(string $query = ''): DataResponse {
 		$contacts = $this->contactsManager->search($query, ['FN'], ['types' => false]);
@@ -426,6 +457,7 @@ class ContactsController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string $bookid
 	 * @param string $uri
 	 * @param string $uid
@@ -442,10 +474,14 @@ class ContactsController extends Controller {
 	 * @param string|null $address_string
 	 * @param int|null $fileId
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\DB\Exception
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return DataResponse<200|400|404, string, array<never, never>>
 	 */
 	public function placeContact(
 		string $bookid,
@@ -583,13 +619,18 @@ class ContactsController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param string $bookid
 	 * @param string $uri
 	 * @param int $myMapId
 	 * @param int|null $fileId
-	 * @return DataResponse|void
+	 *
+	 * @return DataResponse|null
+	 *
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return DataResponse<200|400|404, string, array<never, never>>|null
 	 */
 	public function addContactToMap(string $bookid, string $uri, int $myMapId, ?int $fileId = null): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
@@ -647,7 +688,9 @@ class ContactsController extends Controller {
 	}
 
 	/**
-	 * @return array
+	 * @return bool[]
+	 *
+	 * @psalm-return array<bool>
 	 */
 	private function getAddressBooksReadOnly(): array {
 		$booksReadOnly = [];
@@ -704,14 +747,21 @@ class ContactsController extends Controller {
 
 
 	/**
+	 *
 	 * get contacts with coordinates
 	 *
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @param string $name
+	 *
 	 * @return DataDisplayResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataDisplayResponse<200, array<never, never>>
 	 */
 	public function getContactLetterAvatar(string $name): DataDisplayResponse {
 		$av = $this->avatarManager->getGuestAvatar($name);
@@ -720,10 +770,12 @@ class ContactsController extends Controller {
 	}
 
 	/**
+	 *
 	 * removes the address from the vcard
 	 * and delete corresponding entry in the DB
 	 *
 	 * @NoAdminRequired
+	 *
 	 * @param string $bookid
 	 * @param string $uri
 	 * @param string $uid
@@ -731,7 +783,10 @@ class ContactsController extends Controller {
 	 * @param string $geo
 	 * @param ?int $fileId
 	 * @param ?int $myMapId
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400, 'DELETED'|'FAILED'|'READONLY', array<never, never>>
 	 */
 	public function deleteContactAddress($bookid, $uri, $uid, $adr, $geo, $fileId = null, $myMapId = null): DataResponse {
 

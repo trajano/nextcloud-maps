@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - Maps
@@ -75,14 +75,19 @@ class RoutingController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @param $type
 	 * @param $coords
 	 * @param $name
 	 * @param $totDist
 	 * @param $totTime
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>|DataResponse<404, 'myMaps Folder not found', array<never, never>>
 	 */
 	public function exportRoute($type, $coords, $name, $totDist, $totTime, $myMapId = null): DataResponse {
 		// create /Maps directory if necessary

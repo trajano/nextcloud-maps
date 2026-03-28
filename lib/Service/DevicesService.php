@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -39,16 +39,19 @@ class DevicesService {
 	) {
 	}
 
-	private function db_quote_escape_string($str) {
+	private function db_quote_escape_string(float $str) {
 		return $this->dbconnection->quote($str);
 	}
 
 	/**
 	 * @param string $userId
 	 * @param int $pruneBefore
-	 * @return array with devices
+	 *
+	 * @return (array|int|mixed|true)[][] with devices
+	 *
+	 * @psalm-return array<int, array{id: int, user_agent: mixed, color: mixed, isShareable: true, isDeleteable: true, isUpdateable: true, isReadable: true, shares: array<never, never>}>
 	 */
-	public function getDevicesFromDB($userId) {
+	public function getDevicesFromDB($userId): array {
 		$devices = [];
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'user_agent', 'color')
@@ -76,10 +79,14 @@ class DevicesService {
 
 	/**
 	 * @param string[] $tokens
-	 * @return array
+	 *
+	 * @return (array|bool|int|mixed)[][]
+	 *
 	 * @throws Exception
+	 *
+	 * @psalm-return array<int, array{id?: int, user_agent?: mixed, color?: mixed, isShareable?: false, isDeleteable?: true, isUpdateable?: false, isReadable?: true, shares?: array<never, never>, tokens: list{mixed,...}}>
 	 */
-	public function getDevicesByTokens(array $tokens) {
+	public function getDevicesByTokens(array $tokens): array {
 		$devices = [];
 		$qb = $this->dbconnection->getquerybuilder();
 		$qb->select('d.id', 'd.user_agent', 'd.color', 's.token')
@@ -117,10 +124,14 @@ class DevicesService {
 	 * @param int|null $pruneBefore
 	 * @param int|null $limit
 	 * @param int|null $offset
-	 * @return array
+	 *
+	 * @return (float|int|null)[][]
+	 *
 	 * @throws \OCP\DB\Exception
+	 *
+	 * @psalm-return list<array{accuracy: float|null, altitude: float|null, battery: float|null, id: int, lat: float, lng: float, timestamp: int}>
 	 */
-	public function getDevicePointsFromDB($userId, $deviceId, ?int $pruneBefore = 0, ?int $limit = null, ?int $offset = null) {
+	public function getDevicePointsFromDB($userId, $deviceId, ?int $pruneBefore = 0, ?int $limit = null, ?int $offset = null): array {
 		$qb = $this->dbconnection->getQueryBuilder();
 		// get coordinates
 		$qb->selectDistinct(['p.id', 'lat', 'lng', 'timestamp', 'altitude', 'accuracy', 'battery'])
@@ -168,10 +179,14 @@ class DevicesService {
 	 * @param int|null $pruneBefore
 	 * @param int|null $limit
 	 * @param int|null $offset
-	 * @return array
+	 *
+	 * @return (float|int|null)[][]
+	 *
 	 * @throws Exception
+	 *
+	 * @psalm-return list<array{accuracy: float|null, altitude: float|null, battery: float|null, id: int, lat: float, lng: float, timestamp: int}>
 	 */
-	public function getDevicePointsByTokens(array $tokens, ?int $pruneBefore = 0, ?int $limit = 10000, ?int $offset = 0) {
+	public function getDevicePointsByTokens(array $tokens, ?int $pruneBefore = 0, ?int $limit = 10000, ?int $offset = 0): array {
 		$qb = $this->dbconnection->getQueryBuilder();
 		// get coordinates
 		$or = [];
@@ -221,10 +236,14 @@ class DevicesService {
 	/**
 	 * @param $userId
 	 * @param $deviceId
-	 * @return array
+	 *
+	 * @return float[][]
+	 *
 	 * @throws Exception
+	 *
+	 * @psalm-return array<int, list{float, float}>
 	 */
-	public function getDeviceTimePointsFromDb($userId, $deviceId) {
+	public function getDeviceTimePointsFromDb($userId, $deviceId): array {
 		$qb = $this->dbconnection->getQueryBuilder();
 		// get coordinates
 		$qb->select('lat', 'lng', 'timestamp')
@@ -247,7 +266,7 @@ class DevicesService {
 		return $points;
 	}
 
-	public function getOrCreateDeviceFromDB($userId, $userAgent) {
+	public function getOrCreateDeviceFromDB($userId, $userAgent): int {
 		$deviceId = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id')
@@ -278,7 +297,7 @@ class DevicesService {
 		return $deviceId;
 	}
 
-	public function addPointToDB($deviceId, $lat, $lng, $ts, $altitude, $battery, $accuracy) {
+	public function addPointToDB($deviceId, $lat, $lng, $ts, $altitude, $battery, $accuracy): int {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->insert('maps_device_points')
 			->values([
@@ -295,7 +314,7 @@ class DevicesService {
 		return $pointId;
 	}
 
-	public function addPointsToDB($deviceId, $points) {
+	public function addPointsToDB($deviceId, $points): void {
 		$values = [];
 		foreach ($points as $p) {
 			$value = '('
@@ -319,7 +338,12 @@ class DevicesService {
 		$req->closeCursor();
 	}
 
-	public function getDeviceFromDB($id, $userId) {
+	/**
+	 * @return (int|mixed)[]|null
+	 *
+	 * @psalm-return array{id: int, user_agent: mixed, color: mixed}|null
+	 */
+	public function getDeviceFromDB($id, $userId): array|null {
 		$device = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'user_agent', 'color')
@@ -346,7 +370,7 @@ class DevicesService {
 		return $device;
 	}
 
-	public function editDeviceInDB($id, $color, $name) {
+	public function editDeviceInDB($id, $color, $name): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->update('maps_devices');
 		if (is_string($color) && strlen($color) > 0) {
@@ -361,7 +385,7 @@ class DevicesService {
 		$qb->executeStatement();
 	}
 
-	public function deleteDeviceFromDB($id) {
+	public function deleteDeviceFromDB($id): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->delete('maps_devices')
 			->where(
@@ -376,7 +400,7 @@ class DevicesService {
 		$qb->executeStatement();
 	}
 
-	public function countPoints($userId, $deviceIdList, $begin, $end) {
+	public function countPoints($userId, array $deviceIdList, $begin, $end): int {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select($qb->createFunction('COUNT(*) AS co'))
 			->from('maps_devices', 'd')
@@ -413,7 +437,7 @@ class DevicesService {
 		return $count;
 	}
 
-	public function exportDevices($userId, $handler, $deviceIdList, $begin, $end, $appVersion, $filename) {
+	public function exportDevices($userId, $handler, $deviceIdList, $begin, $end, $appVersion, $filename): void {
 		$gpxHeader = $this->generateGpxHeader($filename, $appVersion, count($deviceIdList));
 		fwrite($handler, $gpxHeader);
 
@@ -426,7 +450,7 @@ class DevicesService {
 		fwrite($handler, '</gpx>');
 	}
 
-	private function generateGpxHeader($name, $appVersion, $nbdev = 0) {
+	private function generateGpxHeader($name, $appVersion, int $nbdev = 0): string {
 		date_default_timezone_set('UTC');
 		$dt = new \DateTime();
 		$date = $dt->format('Y-m-d\TH:i:s\Z');
@@ -455,7 +479,7 @@ class DevicesService {
 		return $gpxText;
 	}
 
-	private function getAndWriteDevicePoints($devid, $begin, $end, $fd, $nbPoints, $userId) {
+	private function getAndWriteDevicePoints($devid, $begin, $end, $fd, $nbPoints, $userId): void {
 		$device = $this->getDeviceFromDB($devid, $userId);
 		$devname = $device['user_agent'];
 		$qb = $this->dbconnection->getQueryBuilder();
@@ -546,7 +570,7 @@ class DevicesService {
 		}
 	}
 
-	public function importDevicesFromGpx($userId, $file) {
+	public function importDevicesFromGpx($userId, $file): int {
 		$this->currentPointList = [];
 		$this->importUserId = $userId;
 		$this->importFileName = $file->getName();
@@ -578,7 +602,7 @@ class DevicesService {
 		return ($this->trackIndex - 1);
 	}
 
-	private function gpxStartElement($parser, $name, $attrs) {
+	private function gpxStartElement($parser, $name, $attrs): void {
 		//$points, array($lat, $lon, $ele, $timestamp, $acc, $bat, $sat, $ua, $speed, $bearing)
 		$this->currentXmlTag = $name;
 		if ($name === 'TRK') {
@@ -598,7 +622,7 @@ class DevicesService {
 		//var_dump($attrs);
 	}
 
-	private function gpxEndElement($parser, $name) {
+	private function gpxEndElement($parser, $name): void {
 		if ($name === 'TRK') {
 			$this->insideTrk = false;
 			// log last track points
@@ -635,7 +659,7 @@ class DevicesService {
 		}
 	}
 
-	private function gpxDataElement($parser, $data) {
+	private function gpxDataElement($parser, $data): void {
 		$d = trim($data);
 		if (!empty($d)) {
 			if ($this->currentXmlTag === 'ELE') {
@@ -667,7 +691,7 @@ class DevicesService {
 		return $nbImported;
 	}
 
-	public function importDevicesFromKml($userId, $fp, $name) {
+	public function importDevicesFromKml($userId, $fp, $name): int {
 		$this->trackIndex = 1;
 		$this->importUserId = $userId;
 		$this->importFileName = $name;
@@ -691,7 +715,7 @@ class DevicesService {
 		return ($this->trackIndex - 1);
 	}
 
-	private function kmlStartElement($parser, $name, $attrs) {
+	private function kmlStartElement($parser, $name, $attrs): void {
 		$this->currentXmlTag = $name;
 		if ($name === 'GX:TRACK') {
 			if (isset($attrs['ID'])) {
@@ -707,7 +731,7 @@ class DevicesService {
 		//var_dump($attrs);
 	}
 
-	private function kmlEndElement($parser, $name) {
+	private function kmlEndElement($parser, $name): void {
 		if ($name === 'GX:TRACK') {
 			// log last track points
 			if (count($this->currentPointList) > 0) {
@@ -747,7 +771,7 @@ class DevicesService {
 		}
 	}
 
-	private function kmlDataElement($parser, $data) {
+	private function kmlDataElement($parser, $data): void {
 		$d = trim($data);
 		if (!empty($d)) {
 			if ($this->currentXmlTag === 'WHEN') {
@@ -758,7 +782,7 @@ class DevicesService {
 		}
 	}
 
-	private function endswith($string, $test) {
+	private function endswith(string $string, string $test): bool {
 		$strlen = strlen($string);
 		$testlen = strlen($test);
 		if ($testlen > $strlen) {

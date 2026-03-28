@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -39,15 +39,20 @@ class PageController extends Controller {
 	}
 
 	/**
+	 *
 	 * CAUTION: the @Stuff turns off security checks; for this page no admin is
-	 *          required and no CSRF check. If you don't know what CSRF is, read
-	 *          it up in the docs or you might create a security hole. This is
-	 *          basically the only required method to add this exemption, don't
-	 *          add it to any other method if you don't exactly know what it does
+	 * required and no CSRF check. If you don't know what CSRF is, read
+	 * it up in the docs or you might create a security hole. This is
+	 * basically the only required method to add this exemption, don't
+	 * add it to any other method if you don't exactly know what it does
 	 *
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
 	 * @return TemplateResponse
+	 *
+	 * @psalm-return TemplateResponse<200, array<never, never>>
 	 */
 	public function index(): TemplateResponse {
 		$this->eventDispatcher->dispatch(LoadSidebar::class, new LoadSidebar());
@@ -64,9 +69,14 @@ class PageController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
+	 *
+	 * @return RedirectResponse|TemplateResponse
+	 *
+	 * @psalm-return RedirectResponse<303, array<never, never>>|TemplateResponse<200, array<never, never>>
 	 */
-	public function indexMyMap(int $myMapId, MyMapsService $service): TemplateResponse|RedirectResponse {
+	public function indexMyMap(int $myMapId, MyMapsService $service): TemplateResponse|RedirectResponse|RedirectResponse {
 		$map = $service->getMyMap($myMapId, $this->userId);
 		if ($map !== null && $map['id'] !== $myMapId) {
 			// Instead of the id of the map containing folder the '.index.maps' file id was passed so redirect
@@ -100,9 +110,12 @@ class PageController extends Controller {
 
 	/**
 	 * @param $response
+	 *
 	 * @return void
+	 *
+	 * @psalm-param TemplateResponse<200, array> $response
 	 */
-	private function addCsp($response): void {
+	private function addCsp(TemplateResponse $response): void {
 		if (class_exists('OCP\AppFramework\Http\ContentSecurityPolicy')) {
 			$csp = new \OCP\AppFramework\Http\ContentSecurityPolicy();
 			// map tiles

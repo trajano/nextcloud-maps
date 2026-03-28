@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -120,9 +120,12 @@ class PublicContactsController extends PublicPageController {
 	 * @PublicPage
 	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, list{0?: array,...}, array<never, never>>
 	 */
 	public function getContacts(): DataResponse {
 		$share = $this->getShare();
@@ -179,9 +182,13 @@ class PublicContactsController extends PublicPageController {
 	 * @param string|null $adrtype
 	 * @param string|null $adr
 	 * @param int|null $fileId
-	 * @return array
+	 *
+	 * @return (\Sabre\VObject\Property|bool|int|mixed|null|string)[]
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return array{FN: mixed|string, UID: mixed|null, HAS_PHOTO: bool, FILEID: int|null, ADR: string, ADRTYPE: string, PHOTO: ''|\Sabre\VObject\Property, GEO: string, GROUPS: string, isReadable: bool, isDeletable: bool, isUpdateable: bool}
 	 */
 	private function vCardToArray(int $sharePermissions, Node $file, \Sabre\VObject\Document $vcard, string $geo, ?string $adrtype = null, ?string $adr = null, ?int $fileId = null): array {
 		$FNArray = $vcard->FN ? $vcard->FN->getJsonValue() : [];
@@ -223,9 +230,10 @@ class PublicContactsController extends PublicPageController {
 
 	/**
 	 * @param string $n
-	 * @return string|null
+	 *
+	 * @return null|string
 	 */
-	private function N2FN(string $n): ?string {
+	private function N2FN(string $n): string|null {
 		if ($n) {
 			$spl = explode($n, ';');
 			if (count($spl) >= 4) {
@@ -241,12 +249,17 @@ class PublicContactsController extends PublicPageController {
 
 	/**
 	 * @PublicPage
+	 *
 	 * @NoCSRFRequired
 	 *
 	 * @param string $name
+	 *
 	 * @return DataDisplayResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
+	 *
+	 * @psalm-return DataDisplayResponse<200, array<never, never>>
 	 */
 	public function getContactLetterAvatar(string $name): DataDisplayResponse {
 		$av = $this->avatarManager->getGuestAvatar($name);

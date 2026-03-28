@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -51,6 +51,11 @@ class RescanTracks extends Command {
 			);
 	}
 
+	/**
+	 * @return int
+	 *
+	 * @psalm-return 0|1
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		if ($this->encryptionManager->isEnabled()) {
 			$output->writeln('Encryption is enabled. Aborted.');
@@ -71,7 +76,7 @@ class RescanTracks extends Command {
 		return 0;
 	}
 
-	private function rescanUserTracks($userId) {
+	private function rescanUserTracks(string $userId): void {
 		echo '======== User ' . $userId . ' ========' . "\n";
 		$c = 1;
 		foreach ($this->tracksService->rescan($userId) as $path) {

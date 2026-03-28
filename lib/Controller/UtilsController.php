@@ -1,4 +1,4 @@
-<?php
+final <?php
 
 /**
  * Nextcloud - maps
@@ -48,12 +48,18 @@ class UtilsController extends Controller {
 	}
 
 	/**
+	 *
 	 * Save options values to the DB for current user
 	 *
 	 * @NoAdminRequired
+	 *
 	 * @param $options
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\PreConditionNotMetException
+	 *
+	 * @psalm-return DataResponse<200, array{done: 1}, array<never, never>>|DataResponse<500, 'File is locked', array<never, never>>
 	 */
 	public function saveOptionValue($options, $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -83,10 +89,14 @@ class UtilsController extends Controller {
 	}
 
 	/**
+	 *
 	 * get options values from the config for current user
 	 *
 	 * @NoAdminRequired
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, array{values: array{isCreatable: true, isDeletable: false, isReadable: true, isUpdateable: true, isShareable: true, graphhopperURL: mixed, maplibreStreetStylePmtiles: mixed, maplibreStreetStyleAuth: mixed, maplibreStreetStyleURL: mixed, mapboxAPIKEY: mixed, graphhopperAPIKEY: mixed, osrmDEMO: mixed, osrmFootURL: mixed, osrmBikeURL: mixed, osrmCarURL: mixed,...}|mixed}, array<never, never>>
 	 */
 	public function getOptionsValues($myMapId = null): DataResponse {
 		$ov = [];
@@ -145,10 +155,14 @@ class UtilsController extends Controller {
 	}
 
 	/**
+	 *
 	 * set routing settings
 	 *
 	 * @param $values
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, 'DONE', array<never, never>>
 	 */
 	public function setRoutingSettings($values): DataResponse {
 		$acceptedKeys = [
@@ -178,11 +192,16 @@ class UtilsController extends Controller {
 	}
 
 	/**
+	 *
 	 * get content of mapbox traffic style
+	 *
 	 * @NoAdminRequired
+	 *
 	 * @NoCSRFRequired
 	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200, array{version: 8, name: 'Mapbox Traffic tileset v1', sources: array{'mapbox-traffic': array{url: 'mapbox://mapbox.mapbox-traffic-v1', type: 'vector'}}, layers: list{array{id: 'traffic', source: 'mapbox-traffic', 'source-layer': 'traffic', type: 'line', paint: array{'line-width': float, 'line-color': list{'case', list{'==', 'low', list{'get', 'congestion'}}, '#00ff00', list{'==', 'moderate', list{'get', 'congestion'}}, '#ffad00', list{'==', 'heavy', list{'get', 'congestion'}}, '#ff0000', list{'==', 'severe', list{'get', 'congestion'}}, '#b43b71', '#000000'}}}}}, array<never, never>>
 	 */
 	public function getTrafficStyle(): DataResponse {
 		$style = [
