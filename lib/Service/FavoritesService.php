@@ -16,8 +16,8 @@
 namespace OCA\Maps\Service;
 
 use OC\Archive\ZIP;
-use OCP\Files\File;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\Files\File;
 use OCP\IDBConnection;
 use OCP\IL10N;
 use OCP\Security\ISecureRandom;
