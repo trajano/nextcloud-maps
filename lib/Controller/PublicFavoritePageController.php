@@ -57,17 +57,14 @@ final class PublicFavoritePageController extends PublicShareController {
 	}
 
 	/**
-	 * @param $token
-	 *
 	 * @return DataResponse|PublicTemplateResponse
 	 *
 	 * @PublicPage
 	 *
 	 * @NoCSRFRequired
 	 *
-	 * @psalm-return DataResponse<400|404|500, array<never, never>, array<never, never>>|PublicTemplateResponse<array<never, never>, 200>
 	 */
-	public function sharedFavoritesCategory($token): PublicTemplateResponse|DataResponse {
+	public function sharedFavoritesCategory(string $token): PublicTemplateResponse|DataResponse {
 		if ($token === '') {
 			return new DataResponse([], Http::STATUS_BAD_REQUEST);
 		}
