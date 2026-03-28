@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 namespace OCA\Maps\Settings;
 
@@ -7,7 +7,7 @@ use OCP\IConfig;
 use OCP\IL10N;
 use OCP\Settings\ISettings;
 
-class AdminSettings implements ISettings {
+final class AdminSettings implements ISettings {
 
 	public function __construct(
 		private IL10N $l,
