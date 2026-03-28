@@ -26,7 +26,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class RescanTracks extends Command {
 
 	protected IUserManager $userManager;
-	protected OutputInterface $output;
 	protected IManager $encryptionManager;
 	protected TracksService $tracksService;
 	protected IConfig $config;
@@ -61,8 +60,8 @@ final class RescanTracks extends Command {
 			$output->writeln('Encryption is enabled. Aborted.');
 			return 1;
 		}
-		$this->output = $output;
-		$userId = $input->getArgument('user_id');
+		$userIdArgument = $input->getArgument('user_id');
+		$userId = is_string($userIdArgument) ? $userIdArgument : null;
 		if ($userId === null) {
 			$this->userManager->callForSeenUsers(function (IUser $user) {
 				$this->rescanUserTracks($user->getUID());
@@ -80,6 +79,9 @@ final class RescanTracks extends Command {
 		echo '======== User ' . $userId . ' ========' . "\n";
 		$c = 1;
 		foreach ($this->tracksService->rescan($userId) as $path) {
+			if (!is_string($path)) {
+				continue;
+			}
 			echo '[' . $c . '] Track "' . $path . '" added' . "\n";
 			$c++;
 		}
