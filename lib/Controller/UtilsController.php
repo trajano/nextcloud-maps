@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -27,7 +27,7 @@ use OCP\IConfig;
 use OCP\IRequest;
 use OCP\Lock\LockedException;
 
-class UtilsController extends Controller {
+final class UtilsController extends Controller {
 
 
 	private $userId;
