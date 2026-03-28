@@ -27,7 +27,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class RescanPhotos extends Command {
 
 	protected IUserManager $userManager;
-	protected OutputInterface $output;
 	protected IManager $encryptionManager;
 	protected PhotofilesService $photofilesService;
 	protected IConfig $config;
@@ -81,10 +80,11 @@ final class RescanPhotos extends Command {
 			$output->writeln('Encryption is enabled. Aborted.');
 			return 1;
 		}
-		$this->output = $output;
-		$userId = $input->getArgument('user_id');
-		$pathToScan = $input->getArgument('path');
-		$inBackground = !($input->getOption('now') ?? true);
+		$userIdArgument = $input->getArgument('user_id');
+		$pathArgument = $input->getArgument('path');
+		$userId = is_string($userIdArgument) ? $userIdArgument : null;
+		$pathToScan = is_string($pathArgument) ? $pathArgument : null;
+		$inBackground = $input->getOption('now') !== true;
 		if ($inBackground) {
 			echo "Extracting coordinates from photo is performed in a BackgroundJob \n";
 		}
@@ -108,10 +108,13 @@ final class RescanPhotos extends Command {
 	 * @return void
 	 * @throws \OCP\PreConditionNotMetException
 	 */
-	private function rescanUserPhotos(string $userId, bool $inBackground = true, ?string $pathToScan = null) {
+	private function rescanUserPhotos(string $userId, bool $inBackground = true, ?string $pathToScan = null): void {
 		echo '======== User ' . $userId . ' ========' . "\n";
 		$c = 1;
 		foreach ($this->photofilesService->rescan($userId, $inBackground, $pathToScan) as $path) {
+			if (!is_string($path)) {
+				continue;
+			}
 			echo '[' . $c . '] Photo "' . $path . '" added' . "\n";
 			$c++;
 		}
