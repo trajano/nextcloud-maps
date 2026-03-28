@@ -123,8 +123,6 @@ class PublicPageController extends AuthPublicShareController {
 	 * @NoCSRFRequired
 	 *
 	 * @return PublicTemplateResponse
-	 *
-	 * @psalm-return PublicTemplateResponse<array<never, never>, 200>
 	 */
 	public function showShare(): PublicTemplateResponse {
 		$shareNode = $this->getShareNode();
@@ -151,8 +149,6 @@ class PublicPageController extends AuthPublicShareController {
   * The form has to submit to the authenticate method route
 	 *
 	 * @return PublicTemplateResponse
-	 *
-	 * @psalm-return PublicTemplateResponse<array<never, never>, 200>
 	 */
 	public function showAuthenticate(): PublicTemplateResponse {
 		$templateParameters = ['share' => $this->share];
