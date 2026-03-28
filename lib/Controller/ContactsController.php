@@ -658,6 +658,8 @@ final class ContactsController extends Controller {
 			$file->putContent($vcard->serialize());
 			return new DataResponse('DONE');
 		}
+
+		return new DataResponse('CONTACT NOT FOUND', 404);
 	}
 
 	/**
