@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -35,7 +35,7 @@ use OCP\Share\IManager as ShareManager;
 use OCP\Share\IShare;
 use Sabre\VObject\Reader;
 
-class PublicContactsController extends PublicPageController {
+final class PublicContactsController extends PublicPageController {
 	protected IManager $contactsManager;
 	protected AddressService $addressService;
 	protected CardDavBackend $cdBackend;
