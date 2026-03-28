@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -20,7 +20,7 @@ use OCP\ICache;
 
 use OCP\ICacheFactory;
 
-class UpdatePhotoByFileJob extends QueuedJob {
+final class UpdatePhotoByFileJob extends QueuedJob {
 
 	/** @var PhotofilesService */
 	private PhotofilesService $photofilesService;
