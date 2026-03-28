@@ -1,22 +1,67 @@
+name: Release
+
 on:
   push:
-    branches: [release]
-
-name: Publish release
+    paths:
+      - '.github/workflows/**'
+      - 'appinfo/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'css/**'
+      - 'img/**'
+      - 'js/**'
+      - 'l10n/**'
+      - 'lib/**'
+      - 'package-lock.json'
+      - 'package.json'
+      - 'src/**'
+      - 'templates/**'
 
 jobs:
+  changelog:
+    if: ${{ github.ref_name == github.event.repository.default_branch }}
+    runs-on: ubuntu-latest
+    outputs:
+      body: ${{ steps.changelog.outputs.clean_changelog }}
+      skipped: ${{ steps.changelog.outputs.skipped }}
+      tag: ${{ steps.changelog.outputs.tag }}
+      version: ${{ steps.changelog.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Create changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v6
+        with:
+          github-token: ${{ secrets.github_token }}
+          output-file: "false"
+          skip-commit: "true"
+          skip-on-empty: "true"
+          skip-version-file: "true"
+
   build:
-    name: Build, upload and release in the appstore
+    needs: changelog
+    if: ${{ needs.changelog.outputs.skipped == 'false' }}
+    runs-on: ubuntu-latest
     environment: release
     env:
       APP_ID: maps
-    runs-on: ubuntu-latest
+      RELEASE_TAG: ${{ needs.changelog.outputs.tag }}
+      RELEASE_VERSION: ${{ needs.changelog.outputs.version }}
+    outputs:
+      asset_name: ${{ steps.package.outputs.asset_name }}
+      asset_path: ${{ steps.package.outputs.asset_path }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v5.0.0
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Install Node
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        uses: actions/setup-node@v6
         with:
           node-version-file: package.json
 
@@ -24,99 +69,63 @@ jobs:
         run: npm i -g npm
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2.36.0
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mbstring, intl, sqlite3, gd
+          extensions: exif, mbstring, intl, sqlite3, gd
           ini-values: post_max_size=256M, max_execution_time=180
-          coverage: xdebug
-          tools: php-cs-fixer, phpunit
+          coverage: none
+          tools: composer, php-cs-fixer, phpunit
 
-      - name: Get current tag
-        id: tag
-        run: |
-          git checkout release
-          git fetch --tags --force
-          tag=$(git tag -l --points-at HEAD)
-          vtag=$(echo $tag | grep "^v[0-9]\+\.[0-9]\+\.[0-9]\+" || echo "")
-          echo "##[set-output name=currenttag;]$vtag"
+      - name: Tag HEAD
+        run: git tag "${RELEASE_TAG}"
 
       - name: Build project
-        if: ${{ startsWith( steps.tag.outputs.currenttag , 'v' ) }}
-        id: build_release
+        id: package
         run: |
-          echo "##[set-output name=app_id;]$APP_ID"
-          echo "###### copy app certificate"
           mkdir -p ~/.nextcloud/certificates
           echo "$APP_CRT" > ~/.nextcloud/certificates/${APP_ID}.crt
           echo "$APP_KEY" > ~/.nextcloud/certificates/${APP_ID}.key
-          echo "###### install dependencies"
+
           export DEBIAN_FRONTEND=noninteractive
           sudo apt update -y
-          #sudo apt upgrade -y
           sudo apt install make openssl -y
-          echo "###### installing nextcloud"
-          mkdir ~/html
-          git clone https://github.com/nextcloud/server.git --recursive --depth 1 -b v30.0.1 ~/html/nextcloud
-          sed -i $'s|if (substr($fullPath, 0, strlen($root) + 1) === $root . \'/\')|if (is_string($root) and substr($fullPath, 0, strlen($root) + 1) === $root . \'/\')|g' ~/html/nextcloud/lib/autoloader.php
-          cp -r $GITHUB_WORKSPACE ~/html/nextcloud/apps/${APP_ID}
-          php ~/html/nextcloud/occ maintenance:install --database "sqlite" --admin-user "admin" --admin-pass "password"
+
+          mkdir -p ~/html
+          git clone https://github.com/nextcloud/server.git --recursive --depth 1 -b stable33 ~/html/nextcloud
+          cp -r "$GITHUB_WORKSPACE" ~/html/nextcloud/apps/${APP_ID}
+
+          php ~/html/nextcloud/occ maintenance:install --database sqlite --admin-user admin --admin-pass password
           cd ~/html/nextcloud/apps/${APP_ID}
-          echo "###### make"
+
           webserveruser=runner occ_dir=~/html/nextcloud make > /dev/null
           php ~/html/nextcloud/occ app:enable ${APP_ID}
           php ~/html/nextcloud/occ maintenance:mode --off
-          echo "###### make appstore"
-          tag=${{ steps.tag.outputs.currenttag }}
-          version=${tag/v/}
-          webserveruser=runner occ_dir=~/html/nextcloud version=$version make appstore
-          echo "##[set-output name=version;]$version"
+
+          webserveruser=runner occ_dir=~/html/nextcloud version=${RELEASE_VERSION} make appstore
+
+          echo "asset_name=${APP_ID}-${RELEASE_VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
+          echo "asset_path=/tmp/build/${APP_ID}-${RELEASE_VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
         env:
           APP_CRT: ${{ secrets.APP_CRT }}
           APP_KEY: ${{ secrets.APP_KEY }}
 
-      - name: Create Release
-        if: ${{ startsWith( steps.tag.outputs.currenttag , 'v' ) }}
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.currenttag }}
-          release_name: ${{ steps.tag.outputs.currenttag }}
-          draft: false
-          prerelease: false
+          body: ${{ needs.changelog.outputs.body }}
+          files: ${{ steps.package.outputs.asset_path }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          token: ${{ github.token }}
 
-      - name: Upload Release Asset
-        if: ${{ startsWith( steps.tag.outputs.currenttag , 'v' ) }}
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /tmp/build/${{ steps.build_release.outputs.app_id }}-${{ steps.build_release.outputs.version }}.tar.gz
-          asset_name: ${{ steps.build_release.outputs.app_id }}-${{ steps.build_release.outputs.version }}.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Publish normal release to appstore
-        if: ${{ startsWith( steps.tag.outputs.currenttag , 'v' ) && !endsWith( steps.tag.outputs.currenttag , 'nightly' ) }}
-        id: publish
+      - name: Publish release to appstore
         run: |
-          SIGNATURE=$(cat /tmp/build/sign.txt | tr -d '\n')
-          VERSION=${{ steps.build_release.outputs.version }}
-          DOWNLOAD_URL=https://github.com/${{ github.repository }}/releases/download/v${VERSION}/${APP_ID}-${VERSION}.tar.gz
-          curl -X POST -H "Authorization: Token $APPSTORE_TOKEN" https://apps.nextcloud.com/api/v1/apps/releases -H "Content-Type: application/json" -d '{"download":"'${DOWNLOAD_URL}'", "signature": "'${SIGNATURE}'"}'
-        env:
-          APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
-
-      - name: Publish nightly release to appstore
-        if: ${{ startsWith( steps.tag.outputs.currenttag , 'v' ) && endsWith( steps.tag.outputs.currenttag , 'nightly' ) }}
-        id: nightly
-        run: |
-          SIGNATURE=$(cat /tmp/build/sign.txt | tr -d '\n')
-          VERSION=${{ steps.build_release.outputs.version }}
-          DOWNLOAD_URL=https://github.com/${{ github.repository }}/releases/download/v${VERSION}/${APP_ID}-${VERSION}.tar.gz
-          curl -X POST -H "Authorization: Token $APPSTORE_TOKEN" https://apps.nextcloud.com/api/v1/apps/releases -H "Content-Type: application/json" -d '{"download":"'${DOWNLOAD_URL}'", "signature": "'${SIGNATURE}'", "nightly": true}'
+          signature=$(tr -d '\n' < /tmp/build/sign.txt)
+          download_url="https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/${APP_ID}-${RELEASE_VERSION}.tar.gz"
+          curl -X POST \
+            -H "Authorization: Token $APPSTORE_TOKEN" \
+            -H "Content-Type: application/json" \
+            https://apps.nextcloud.com/api/v1/apps/releases \
+            -d "{\"download\":\"${download_url}\",\"signature\":\"${signature}\"}"
         env:
           APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
