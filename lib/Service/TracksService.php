@@ -46,7 +46,7 @@ final class TracksService {
 	/**
 	 * @psalm-return \Generator<int, mixed, mixed, void>
 	 */
-	public function rescan($userId): \Generator {
+	public function rescan(string $userId): \Generator {
 		$userFolder = $this->root->getUserFolder($userId);
 		$tracks = $this->gatherTrackFiles($userFolder, true);
 		$this->deleteAllTracksFromDB($userId);
@@ -298,7 +298,7 @@ final class TracksService {
 
 	/**
 	 * @param $userId
-	 * @param $folder
+	 * @param File|Folder|null $folder
 	 *
 	 * @return (null|string)[]
 	 *
@@ -308,7 +308,7 @@ final class TracksService {
 	 *
 	 * @psalm-return list{0?: null|string,...}
 	 */
-	private function getIgnoredPaths(string $userId, $folder = null, bool $hideImagesOnCustomMaps = true): array {
+	private function getIgnoredPaths(string $userId, Folder|File|null $folder = null, bool $hideImagesOnCustomMaps = true): array {
 		$ignoredPaths = [];
 		$userFolder = $this->root->getUserFolder($userId);
 		if (is_null($folder)) {
@@ -342,8 +342,12 @@ final class TracksService {
 
 	/**
 	 * @param null|string $userId
+	 *
+	 * @return (false|int|mixed|string)[]|null
+	 *
+	 * @psalm-return array{id: int, file_id: int, color: mixed, metadata: mixed, etag: mixed, path: ''|mixed, isShareable: false|mixed, isDeletable: false|mixed, isUpdateable: false|mixed, isReadable: false|mixed, mtime: 0|mixed, file_name: ''|mixed, file_path: ''|mixed}|null
 	 */
-	public function getTrackFromDB($id, ?string $userId = null) {
+	public function getTrackFromDB($id, ?string $userId = null): ?array {
 		$track = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'file_id', 'color', 'metadata', 'etag')
@@ -393,7 +397,12 @@ final class TracksService {
 		return $track;
 	}
 
-	public function getTrackByFileIDFromDB(int $fileId, ?string $userId = null) {
+	/**
+	 * @return (false|int|mixed|string)[]|null
+	 *
+	 * @psalm-return array{id: int, file_id: int, color: mixed, metadata: mixed, etag: mixed, path: ''|mixed, isShareable: false|mixed, isDeletable: false|mixed, isUpdateable: false|mixed, isReadable: false|mixed, mtime: 0|mixed, file_name: ''|mixed, file_path: ''|mixed}|null
+	 */
+	public function getTrackByFileIDFromDB(int $fileId, ?string $userId = null): ?array {
 		$track = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'file_id', 'color', 'metadata', 'etag')
@@ -459,7 +468,11 @@ final class TracksService {
 		return $trackId;
 	}
 
-	public function editTrackInDB($id, $color, $metadata, $etag): void {
+	/**
+	 * @param null|string $metadata
+	 * @param null|string $etag
+	 */
+	public function editTrackInDB($id, $color, ?string $metadata, ?string $etag): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->update('maps_tracks');
 		if ($color !== null) {
@@ -977,7 +990,7 @@ final class TracksService {
 	/**
 	 * @psalm-param list<mixed> $points
 	 */
-	private function getMaxSpeed(array $points) {
+	private function getMaxSpeed(array $points): float|int {
 		$maxSpeed = 0;
 
 		if (count($points) > 0) {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright Copyright (c) 2019, final Paul Schwörer <hello@paulschwoerer.de>
+ * @copyright Copyright (c) 2019, Paul Schwörer <hello@paulschwoerer.de>
  *
  * @author Paul Schwörer <hello@paulschwoerer.de>
  *

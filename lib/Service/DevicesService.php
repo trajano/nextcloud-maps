@@ -131,7 +131,7 @@ final class DevicesService {
 	 *
 	 * @psalm-return list<array{accuracy: float|null, altitude: float|null, battery: float|null, id: int, lat: float, lng: float, timestamp: int}>
 	 */
-	public function getDevicePointsFromDB($userId, $deviceId, ?int $pruneBefore = 0, ?int $limit = null, ?int $offset = null): array {
+	public function getDevicePointsFromDB(string $userId, int $deviceId, ?int $pruneBefore = 0, ?int $limit = null, ?int $offset = null): array {
 		$qb = $this->dbconnection->getQueryBuilder();
 		// get coordinates
 		$qb->selectDistinct(['p.id', 'lat', 'lng', 'timestamp', 'altitude', 'accuracy', 'battery'])
@@ -266,7 +266,7 @@ final class DevicesService {
 		return $points;
 	}
 
-	public function getOrCreateDeviceFromDB($userId, $userAgent): int {
+	public function getOrCreateDeviceFromDB(string $userId, string $userAgent): int {
 		$deviceId = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id')
@@ -297,7 +297,15 @@ final class DevicesService {
 		return $deviceId;
 	}
 
-	public function addPointToDB($deviceId, $lat, $lng, $ts, $altitude, $battery, $accuracy): int {
+	/**
+	 * @param float|int|string $lat
+	 * @param float|int|string $lng
+	 * @param float|int|string|null $ts
+	 * @param float|int|string|null $altitude
+	 * @param float|int|string|null $battery
+	 * @param float|int|string|null $accuracy
+	 */
+	public function addPointToDB(int $deviceId, $lat, $lng, $ts, $altitude, $battery, $accuracy): int {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->insert('maps_device_points')
 			->values([
@@ -314,7 +322,7 @@ final class DevicesService {
 		return $pointId;
 	}
 
-	public function addPointsToDB($deviceId, $points): void {
+	public function addPointsToDB(int $deviceId, $points): void {
 		$values = [];
 		foreach ($points as $p) {
 			$value = '('
@@ -343,7 +351,7 @@ final class DevicesService {
 	 *
 	 * @psalm-return array{id: int, user_agent: mixed, color: mixed}|null
 	 */
-	public function getDeviceFromDB($id, $userId): ?array {
+	public function getDeviceFromDB(int $id, string $userId): ?array {
 		$device = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'user_agent', 'color')
@@ -370,7 +378,7 @@ final class DevicesService {
 		return $device;
 	}
 
-	public function editDeviceInDB($id, $color, $name): void {
+	public function editDeviceInDB(int $id, string $color, $name): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->update('maps_devices');
 		if (is_string($color) && strlen($color) > 0) {
@@ -385,7 +393,7 @@ final class DevicesService {
 		$qb->executeStatement();
 	}
 
-	public function deleteDeviceFromDB($id): void {
+	public function deleteDeviceFromDB(int $id): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->delete('maps_devices')
 			->where(
@@ -479,7 +487,10 @@ final class DevicesService {
 		return $gpxText;
 	}
 
-	private function getAndWriteDevicePoints($devid, $begin, $end, $fd, $nbPoints, $userId): void {
+	/**
+	 * @psalm-param int<1, max> $nbPoints
+	 */
+	private function getAndWriteDevicePoints($devid, $begin, $end, $fd, int $nbPoints, $userId): void {
 		$device = $this->getDeviceFromDB($devid, $userId);
 		$devname = $device['user_agent'];
 		$qb = $this->dbconnection->getQueryBuilder();
@@ -676,7 +687,7 @@ final class DevicesService {
 		}
 	}
 
-	public function importDevicesFromKmz($userId, $file) {
+	public function importDevicesFromKmz($userId, $file): int {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 		$name = $file->getName();
 		$zf = new ZIP($path);
@@ -691,6 +702,9 @@ final class DevicesService {
 		return $nbImported;
 	}
 
+	/**
+	 * @param bool|resource $fp
+	 */
 	public function importDevicesFromKml($userId, $fp, $name): int {
 		$this->trackIndex = 1;
 		$this->importUserId = $userId;

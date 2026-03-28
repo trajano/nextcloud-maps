@@ -25,7 +25,7 @@ use Sabre\VObject\Reader;
 
 /**
  * final
- * Class AddressService
+ * Class Afinal ddressService
  *
  * The address service can be used to get lat lng information for an address.
  * The service takes care of caching and rate limits.
@@ -61,7 +61,10 @@ class AddressService {
 	}
 
 	// converts the address to geo lat;lon
-	public function addressToGeo($adr, $uri): string {
+	/**
+	 * @param int|string $uri
+	 */
+	public function addressToGeo($adr, string|int $uri): string {
 		$geo = $this->lookupAddress($adr, $uri);
 		return strval($geo[0]) . ';' . strval($geo[1]);
 	}
@@ -78,7 +81,7 @@ class AddressService {
 	 *
 	 * @psalm-return list{mixed, mixed, mixed}
 	 */
-	public function lookupAddress($adr, $uri): array {
+	public function lookupAddress($adr, int|string $uri): array {
 		$adr_norm = strtolower(preg_replace('/\s+/', '', $adr));
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'lat', 'lng', 'looked_up')

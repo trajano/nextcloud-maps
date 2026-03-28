@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright Copyright (c) 2019 Julien Veyssier <eneifinal luj@posteo.net>
+ * @copyright Copyright (c) 2019 Julien Veyssier <eneiluj@posteo.net>
  *
  * @author Julien Veyssier <eneiluj@posteo.net>
  *

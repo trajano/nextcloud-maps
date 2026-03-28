@@ -408,7 +408,7 @@ final class GeophotoService {
 	 *
 	 * @psalm-return array<int, list{string, string}>
 	 */
-	private function getTimeorderdPointsFromTrack($track): array {
+	private function getTimeorderdPointsFromTrack(\SimpleXMLElement $track): array {
 		$points = [];
 		foreach ($track->trkseg as $seg) {
 			foreach ($seg->trkpt as $pt) {
