@@ -89,18 +89,10 @@ final class ContactsController extends Controller {
 	}
 
 	/**
+	 * Check if a geographical address duplicates an earlier address.
 	 *
-	 * check if geographical address is duplicated
-	 *
-	 * @param array containing contact's previous different addresses
-	 * @param contact's address to check
-	 * @param float[][] $prevGeo
-	 * @param float[] $geo
-	 *
-	 * @return int if address is new, index of duplicated address in other cases
-	 *
-	 * @psalm-param list{0?: array<float>,...} $prevGeo
-	 * @psalm-param array<float> $geo
+	 * @param list<list{float, float}> $prevGeo
+	 * @param list{float, float} $geo
 	 *
 	 * @psalm-return int<-1, max>
 	 */
@@ -152,14 +144,12 @@ final class ContactsController extends Controller {
 	 *
 	 * @NoAdminRequired
 	 *
-	 * @param null $myMapId
+	 * @param int|string|null $myMapId
 	 *
 	 * @return DataResponse
 	 *
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
-	 *
-	 * @psalm-return DataResponse<200, array<array>, array<never, never>>
 	 */
 	public function getContacts(int|string|null $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
@@ -335,9 +325,8 @@ final class ContactsController extends Controller {
 	}
 
 	/**
-	 * @param $contactUid
-	 * @param $addressBookUri
-	 * @return string
+	 * @param string $contactUid
+	 * @param string $addressBookUri
 	 */
 	private function directUrlToContact(string $contactUid, string $addressBookUri): string {
 		return $this->urlGenerator->getAbsoluteURL(
@@ -627,12 +616,8 @@ final class ContactsController extends Controller {
 	 * @param int $myMapId
 	 * @param int|null $fileId
 	 *
-	 * @return DataResponse|null
-	 *
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
-	 *
-	 * @psalm-return DataResponse<200|400|404, string, array<never, never>>|null
 	 */
 	public function addContactToMap(string $bookid, string $uri, int $myMapId, ?int $fileId = null): DataResponse {
 		$userFolder = $this->root->getUserFolder($this->userId);
