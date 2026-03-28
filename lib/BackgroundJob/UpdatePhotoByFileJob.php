@@ -53,16 +53,24 @@ final class UpdatePhotoByFileJob extends QueuedJob {
 		$this->backgroundJobCache = $this->cacheFactory->createDistributed('maps:background-jobs');
 	}
 
-	public function run($argument) {
-		$userFolder = $this->root->getUserFolder($argument['userId']);
-		$files = $userFolder->getById($argument['fileId']);
+	/**
+	 * @param array{userId: string, fileId: int} $argument
+	 */
+	public function run($argument): void {
+		$userId = $argument['userId'];
+		$fileId = $argument['fileId'];
+		$userFolder = $this->root->getUserFolder($userId);
+		$files = $userFolder->getById($fileId);
 		if (empty($files)) {
 			return;
 		}
 		$file = array_shift($files);
+		if ($file === false) {
+			return;
+		}
 		$this->photofilesService->updateByFileNow($file);
 
-		$counter = $this->backgroundJobCache->get('recentlyUpdated:' . $argument['userId']) ?? 0;
-		$this->backgroundJobCache->set('recentlyUpdated:' . $argument['userId'], (int)$counter + 1, 60 * 60 * 3);
+		$counter = (int)($this->backgroundJobCache->get('recentlyUpdated:' . $userId) ?? 0);
+		$this->backgroundJobCache->set('recentlyUpdated:' . $userId, $counter + 1, 60 * 60 * 3);
 	}
 }
