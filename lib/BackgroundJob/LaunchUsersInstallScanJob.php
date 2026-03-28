@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -19,7 +19,7 @@ use OCP\IUser;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
 
-class LaunchUsersInstallScanJob extends QueuedJob {
+final class LaunchUsersInstallScanJob extends QueuedJob {
 
 	/**
 	 * LaunchUsersInstallScanJob constructor.

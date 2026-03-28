@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -18,7 +18,7 @@ use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\QueuedJob;
 use Psr\Log\LoggerInterface;
 
-class LookupMissingGeoJob extends QueuedJob {
+final class LookupMissingGeoJob extends QueuedJob {
 
 	/**
 	 * LookupMissingGeoJob constructor.
