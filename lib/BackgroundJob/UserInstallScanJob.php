@@ -50,7 +50,10 @@ final class UserInstallScanJob extends QueuedJob {
 		$this->tracksService = $tracksService;
 	}
 
-	public function run($argument) {
+	/**
+	 * @param array{userId: string} $argument
+	 */
+	public function run($argument): void {
 		$userId = $argument['userId'];
 		\OCP\Server::get(LoggerInterface::class)->debug('Launch user install scan job for ' . $userId . ' cronjob executed');
 		// scan photos and tracks for given user
@@ -59,22 +62,12 @@ final class UserInstallScanJob extends QueuedJob {
 		$this->config->setUserValue($userId, 'maps', 'installScanDone', 'yes');
 	}
 
-	private function rescanUserPhotos($userId): void {
-		//$this->output->info('======== User '.$userId.' ========'."\n");
-		$c = 1;
-		foreach ($this->photofilesService->rescan($userId) as $path) {
-			//$this->output->info('['.$c.'] Photo "'.$path.'" added'."\n");
-			$c++;
-		}
+	private function rescanUserPhotos(string $userId): void {
+		iterator_count($this->photofilesService->rescan($userId));
 	}
 
-	private function rescanUserTracks($userId): void {
-		//$this->output->info('======== User '.$userId.' ========'."\n");
-		$c = 1;
-		foreach ($this->tracksService->rescan($userId) as $path) {
-			//$this->output->info('['.$c.'] Track "'.$path.'" added'."\n");
-			$c++;
-		}
+	private function rescanUserTracks(string $userId): void {
+		iterator_count($this->tracksService->rescan($userId));
 	}
 
 }
