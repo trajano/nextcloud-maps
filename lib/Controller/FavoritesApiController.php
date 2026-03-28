@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - Maps
@@ -25,7 +25,7 @@ use OCP\IServerContainer;
 use OCP\IUserManager;
 use OCP\Share\IManager;
 
-class FavoritesApiController extends ApiController {
+final class FavoritesApiController extends ApiController {
 	private $userId;
 	private $userfolder;
 	private $config;
