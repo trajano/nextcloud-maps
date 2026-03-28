@@ -68,7 +68,7 @@ final class PageController extends Controller {
 	 */
 #[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 #[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
-	public function indexMyMap(int $myMapId, MyMapsService $service): TemplateResponse|RedirectResponse|RedirectResponse {
+	public function indexMyMap(int $myMapId, MyMapsService $service): TemplateResponse|RedirectResponse {
 		$map = $service->getMyMap($myMapId, $this->userId);
 		if ($map !== null && $map['id'] !== $myMapId) {
 			// Instead of the id of the map containing folder the '.index.maps' file id was passed so redirect

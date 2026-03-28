@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace OCA\Maps\Migration;
 
-use final Closure;
+use Closure;
 use OCP\DB\ISchemaWrapper;
 use OCP\IDBConnection;
 use OCP\Migration\IOutput;
