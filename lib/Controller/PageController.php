@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -24,7 +24,7 @@ use OCP\IConfig;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 
-class PageController extends Controller {
+final class PageController extends Controller {
 
 	public function __construct(
 		string $appName,
