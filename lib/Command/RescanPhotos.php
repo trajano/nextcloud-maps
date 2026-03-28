@@ -80,7 +80,9 @@ final class RescanPhotos extends Command {
 			$output->writeln('Encryption is enabled. Aborted.');
 			return 1;
 		}
+		/** @var string|null $userIdArgument */
 		$userIdArgument = $input->getArgument('user_id');
+		/** @var string|null $pathArgument */
 		$pathArgument = $input->getArgument('path');
 		$userId = is_string($userIdArgument) ? $userIdArgument : null;
 		$pathToScan = is_string($pathArgument) ? $pathArgument : null;
