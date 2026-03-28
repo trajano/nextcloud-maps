@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -22,7 +22,7 @@ use OCP\IL10N;
 use OCP\Security\ISecureRandom;
 use Psr\Log\LoggerInterface;
 
-class FavoritesService {
+final class FavoritesService {
 
 	private $l10n;
 	private $dbconnection;
