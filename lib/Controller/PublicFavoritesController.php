@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - Maps
@@ -35,7 +35,7 @@ use OCP\IUserManager;
 use OCP\Share\Exceptions\ShareNotFound;
 use OCP\Share\IManager;
 
-class PublicFavoritesController extends PublicPageController {
+final class PublicFavoritesController extends PublicPageController {
 
 	private string $appVersion;
 	private IL10N $l;
