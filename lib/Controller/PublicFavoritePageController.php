@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * @copyright Copyright (c) 2019, Paul Schwörer <hello@paulschwoerer.de>
@@ -38,7 +38,7 @@ use OCP\ISession;
 use OCP\IUserManager;
 use OCP\Util;
 
-class PublicFavoritePageController extends PublicShareController {
+final class PublicFavoritePageController extends PublicShareController {
 	private $config;
 
 	/* @var FavoriteShareMapper */
