@@ -371,7 +371,7 @@ final class PhotofilesService {
 		$this->jobList->add(AddPhotoJob::class, ['photoId' => $photo->getId(), 'userId' => $userId]);
 	}
 
-	public function addPhotoNow(Node $photo, $userId): void {
+	public function addPhotoNow(Node $photo, string $userId): void {
 		$exif = $this->getExif($photo);
 		if (!is_null($exif)) {
 			// filehooks are triggered several times (2 times for file creation)

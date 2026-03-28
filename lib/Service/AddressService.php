@@ -61,7 +61,10 @@ class AddressService {
 	}
 
 	// converts the address to geo lat;lon
-	public function addressToGeo($adr, $uri): string {
+	/**
+	 * @param int|string $uri
+	 */
+	public function addressToGeo($adr, string|int $uri): string {
 		$geo = $this->lookupAddress($adr, $uri);
 		return strval($geo[0]) . ';' . strval($geo[1]);
 	}

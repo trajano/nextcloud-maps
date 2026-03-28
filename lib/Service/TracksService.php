@@ -46,7 +46,7 @@ final class TracksService {
 	/**
 	 * @psalm-return \Generator<int, mixed, mixed, void>
 	 */
-	public function rescan($userId): \Generator {
+	public function rescan(string $userId): \Generator {
 		$userFolder = $this->root->getUserFolder($userId);
 		$tracks = $this->gatherTrackFiles($userFolder, true);
 		$this->deleteAllTracksFromDB($userId);
@@ -298,7 +298,7 @@ final class TracksService {
 
 	/**
 	 * @param $userId
-	 * @param $folder
+	 * @param File|Folder|null $folder
 	 *
 	 * @return (null|string)[]
 	 *
@@ -308,7 +308,7 @@ final class TracksService {
 	 *
 	 * @psalm-return list{0?: null|string,...}
 	 */
-	private function getIgnoredPaths(string $userId, $folder = null, bool $hideImagesOnCustomMaps = true): array {
+	private function getIgnoredPaths(string $userId, Folder|File|null $folder = null, bool $hideImagesOnCustomMaps = true): array {
 		$ignoredPaths = [];
 		$userFolder = $this->root->getUserFolder($userId);
 		if (is_null($folder)) {
@@ -459,7 +459,10 @@ final class TracksService {
 		return $trackId;
 	}
 
-	public function editTrackInDB($id, $color, $metadata, $etag): void {
+	/**
+	 * @param null|string $metadata
+	 */
+	public function editTrackInDB($id, $color, ?string $metadata, string $etag): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->update('maps_tracks');
 		if ($color !== null) {
