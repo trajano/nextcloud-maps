@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -31,7 +31,7 @@ use OCP\IPreview;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
-class GeophotoService {
+final class GeophotoService {
 
 	private $l10n;
 	private $root;
