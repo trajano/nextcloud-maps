@@ -36,7 +36,10 @@ final class LaunchUsersInstallScanJob extends QueuedJob {
 		parent::__construct($timeFactory);
 	}
 
-	public function run($argument) {
+	/**
+	 * @param array<never, never> $argument
+	 */
+	public function run($argument): void {
 		\OCP\Server::get(LoggerInterface::class)->debug('Launch users install scan jobs cronjob executed');
 		$this->userManager->callForSeenUsers(function (IUser $user) {
 			$this->jobList->add(UserInstallScanJob::class, ['userId' => $user->getUID()]);
