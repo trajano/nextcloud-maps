@@ -175,7 +175,7 @@ final class DevicesService {
 	}
 
 	/**
-	 * @param string[] $token
+	 * @param string[] $tokens
 	 * @param int|null $pruneBefore
 	 * @param int|null $limit
 	 * @param int|null $offset
