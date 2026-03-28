@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -20,7 +20,7 @@ use OCP\IDBConnection;
 use OCP\IL10N;
 use Psr\Log\LoggerInterface;
 
-class DevicesService {
+final class DevicesService {
 
 	private $importUserId;
 	private $currentXmlTag;
