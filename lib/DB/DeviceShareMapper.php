@@ -68,7 +68,7 @@ class DeviceShareMapper extends QBMapper {
 	}
 
 	/**
-	 * @param string[] $token
+	 * @param string[] $tokens
 	 *
 	 * @return DeviceShare[]
 	 *
@@ -89,10 +89,9 @@ class DeviceShareMapper extends QBMapper {
 	}
 
 	/**
-	 * @param $deviceId
-	 * @param $timestampFrom
-	 * @param $timestampTo
-	 * @return DeviceShare
+	 * @param int $deviceId
+	 * @param int $timestampFrom
+	 * @param int $timestampTo
 	 */
 	public function create($deviceId, $timestampFrom, $timestampTo): Entity {
 		$token = $this->secureRandom->generate(
