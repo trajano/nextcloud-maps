@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -30,7 +30,7 @@ use OCP\Lock\LockedException;
 use OCP\Share\Exceptions\ShareNotFound;
 use OCP\Share\IManager as ShareManager;
 
-class PublicUtilsController extends PublicPageController {
+final class PublicUtilsController extends PublicPageController {
 
 	protected IRootFolder $root;
 
