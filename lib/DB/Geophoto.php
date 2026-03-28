@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -14,7 +14,7 @@ namespace OCA\Maps\DB;
 
 use OCP\AppFramework\Db\Entity;
 
-class Geophoto extends Entity {
+final class Geophoto extends Entity {
 
 	protected $fileId;
 	protected $lat;
