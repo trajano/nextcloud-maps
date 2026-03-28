@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RegisterMimetypes extends Command {
+final class RegisterMimetypes extends Command {
 
 	protected MimetypeService $mimetypeService;
 
