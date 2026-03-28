@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - Maps
@@ -26,7 +26,7 @@ use OCP\Share\IManager;
 
 use function OCA\Maps\Helper\remove_utf8_bom;
 
-class TracksController extends Controller {
+final class TracksController extends Controller {
 
 	private $userId;
 	private $userfolder;
