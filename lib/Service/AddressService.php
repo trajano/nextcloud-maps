@@ -24,6 +24,7 @@ use Psr\Log\LoggerInterface;
 use Sabre\VObject\Reader;
 
 /**
+ * final
  * Class AddressService
  *
  * The address service can be used to get lat lng information for an address.
@@ -66,13 +67,16 @@ class AddressService {
 	}
 
 	/**
+	 *
 	 * Safely looks up an adr string
 	 * First: Checks if the adress is known and in the db
-	 *      Uses this geo if it was looked up externally
-	 *      Look's it up if it was not looked up
+	 * Uses this geo if it was looked up externally
+	 * Look's it up if it was not looked up
+	 *
 	 * @param $adr
 	 * @param $uri ressource identifier (contact URI for example)
-	 * @return array($lat,$lng,$lookedUp)
+	 *
+	 * @psalm-return list{mixed, mixed, mixed}
 	 */
 	public function lookupAddress($adr, $uri): array {
 		$adr_norm = strtolower(preg_replace('/\s+/', '', $adr));
@@ -138,6 +142,11 @@ class AddressService {
 		return [$lat, $lng, $lookedUp];
 	}
 
+	/**
+	 * @return (bool|mixed|null)[]
+	 *
+	 * @psalm-return list{mixed|null, mixed|null, bool}
+	 */
 	private function lookupAddressInternal($adr): array {
 		$res = [null, null, false];
 
@@ -169,6 +178,11 @@ class AddressService {
 
 	// looks up the address on external provider returns lat, lon, lookupstate
 	// do lookup only if last one occured more than one second ago
+	/**
+	 * @return (bool|mixed|null)[]
+	 *
+	 * @psalm-return list{mixed|null, mixed|null, bool}
+	 */
 	private function lookupAddressExternal($adr): array {
 		if (time() - intval($this->memcache->get('lastAddressLookup')) >= 1) {
 			$opts = [
@@ -231,7 +245,7 @@ class AddressService {
 	}
 
 	// launch lookup for all addresses of the vCard
-	public function scheduleVCardForLookup($cardData, $cardUri) {
+	public function scheduleVCardForLookup($cardData, $cardUri): void {
 		$vCard = Reader::read($cardData);
 
 		$this->cleanUpDBContactAddresses($vCard, $cardUri);
@@ -246,7 +260,7 @@ class AddressService {
 		}
 	}
 
-	private function cleanUpDBContactAddresses($vCard, $uri) {
+	private function cleanUpDBContactAddresses(\Sabre\VObject\Document $vCard, $uri): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		// get all vcard addresses
 		$vCardAddresses = [];
@@ -279,7 +293,7 @@ class AddressService {
 		}
 	}
 
-	public function deleteDBContactAddresses($uri) {
+	public function deleteDBContactAddresses($uri): void {
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->delete('maps_address_geo')
 			->where(
@@ -289,6 +303,9 @@ class AddressService {
 	}
 
 	// schedules the address for an external lookup
+	/**
+	 * @psalm-return list{mixed, mixed, mixed, mixed}
+	 */
 	private function scheduleForLookup($adr, $uri): array {
 		$geo = $this->lookupAddressInternal($adr);
 		// if not found internally, ask external service
@@ -316,7 +333,10 @@ class AddressService {
 
 	// looks up the geo information which have not been looked up
 	// this is called by the Cron job
-	public function lookupMissingGeo($max = 200):bool {
+	/**
+	 * @psalm-param 200 $max
+	 */
+	public function lookupMissingGeo(int $max = 200):bool {
 		// stores if all addresses where looked up
 		$lookedUpAll = true;
 		$qb = $this->dbconnection->getQueryBuilder();

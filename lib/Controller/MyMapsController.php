@@ -19,7 +19,7 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
-class MyMapsController extends Controller {
+final class MyMapsController extends Controller {
 
 
 	/* @var MyMapsService */
@@ -32,9 +32,7 @@ class MyMapsController extends Controller {
 		$this->userId = $userId;
 	}
 
-	/**
-	 * @NoAdminRequired
-	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addMyMap(array $values): DataResponse {
 		$newName = $values['newName'] ?? 'New Map';
 		$myMap = $this->myMapsService->addMyMap($newName, $this->userId);
@@ -44,25 +42,19 @@ class MyMapsController extends Controller {
 		return new DataResponse($myMap);
 	}
 
-	/**
-	 * @NoAdminRequired
-	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function updateMyMap(int $id, array $values): DataResponse {
 		$myMap = $this->myMapsService->updateMyMap($id, $values, $this->userId);
 		return new DataResponse($myMap);
 	}
 
-	/**
-	 * @NoAdminRequired
-	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteMyMap(int $id): DataResponse {
 		$result = $this->myMapsService->deleteMyMap($id, $this->userId);
 		return new DataResponse($result);
 	}
 
-	/**
-	 * @NoAdminRequired
-	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getMyMaps(): DataResponse {
 		$myMaps = $this->myMapsService->getAllMyMaps($this->userId);
 		return new DataResponse($myMaps);

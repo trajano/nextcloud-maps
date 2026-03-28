@@ -4,7 +4,7 @@
  * Nextcloud - maps
  *
  * This file is licensed under the Affero General Public License version 3 or
- * later. See the COPYING file.
+ * later. See tfinal he COPYING file.
  *
  * @author Gergely Kovács 2021
  * @copyright Gergely Kovács 2021
@@ -170,8 +170,13 @@ class ExifGeoData extends \stdClass implements \JsonSerializable {
 	 * @param $ref_target
 	 * @param $ref_source
 	 * @param array $exif
+	 *
+	 * @psalm-param 'GPSLatitude'|'GPSLongitude' $target
+	 * @psalm-param 2|4 $source
+	 * @psalm-param 'GPSLatitudeRef'|'GPSLongitudeRef' $ref_target
+	 * @psalm-param 1|3 $ref_source
 	 */
-	protected static function readPelCoordinate(PelIfd $pelIfdGPS, $target, $source, $ref_target, $ref_source, array &$exif = []) : void {
+	protected static function readPelCoordinate(PelIfd $pelIfdGPS, string $target, int $source, string $ref_target, int $ref_source, array &$exif = []) : void {
 		$coordinate = $pelIfdGPS->getEntry($source)->getValue();
 		if ((int)$coordinate[0][1] != 0 && (int)$coordinate[1][1] != 0 && (int)$coordinate[2][1] != 0) {
 			$exif[$ref_target] = $pelIfdGPS->getEntry($ref_source)->getValue();
@@ -185,9 +190,8 @@ class ExifGeoData extends \stdClass implements \JsonSerializable {
 
 	/**
 	 * @param string $path
-	 * @return ExifGeoData
 	 */
-	public static function get(string $path) : ?ExifGeoData {
+	public static function get(string $path) : static {
 		try {
 			$data = static::get_exif_data_array($path);
 		} catch (\Throwable $e) {
@@ -207,8 +211,11 @@ class ExifGeoData extends \stdClass implements \JsonSerializable {
 
 	/**
 	 * @param bool $invalidate_zero_iland
+	 *
 	 * @throws ExifDataInvalidException
 	 * @throws ExifDataNoLocationException
+	 *
+	 * @return void
 	 */
 	public function validate($invalidate_zero_iland = false) {
 		if (!$this->exif_data) {
@@ -277,9 +284,8 @@ class ExifGeoData extends \stdClass implements \JsonSerializable {
 
 	/**
 	 * @param $geo
-	 * @return float|null
 	 */
-	private function geo2float($geo): ?float {
+	private function geo2float($geo): float {
 		if (!is_array($geo)) {
 			$geo = [$geo];
 		}
@@ -346,7 +352,12 @@ class ExifGeoData extends \stdClass implements \JsonSerializable {
 	}
 
 	/**
+	 *
 	 * If someone wants to have it as a json object
+	 *
+	 * @return (float|int|null)[]
+	 *
+	 * @psalm-return array{lat: float|null, lng: float|null, dateTaken: int|null}
 	 */
 	public function jsonSerialize(): array {
 		return [

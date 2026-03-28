@@ -18,7 +18,7 @@ use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\QueuedJob;
 use Psr\Log\LoggerInterface;
 
-class LookupMissingGeoJob extends QueuedJob {
+final class LookupMissingGeoJob extends QueuedJob {
 
 	/**
 	 * LookupMissingGeoJob constructor.
@@ -33,7 +33,10 @@ class LookupMissingGeoJob extends QueuedJob {
 		parent::__construct($timeFactory);
 	}
 
-	public function run($argument) {
+	/**
+	 * @param array<never, never> $argument
+	 */
+	public function run($argument): void {
 		\OCP\Server::get(LoggerInterface::class)->debug('Maps address lookup cronjob executed');
 		// lookup at most 200 addresses
 		if (!$this->addressService->lookupMissingGeo(200)) {

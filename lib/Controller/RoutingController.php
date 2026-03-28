@@ -25,7 +25,7 @@ use OCP\IServerContainer;
 use OCP\IUserManager;
 use OCP\Share\IManager;
 
-class RoutingController extends Controller {
+final class RoutingController extends Controller {
 
 	private $userId;
 	private $userfolder;
@@ -74,16 +74,19 @@ class RoutingController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $type
 	 * @param $coords
 	 * @param $name
 	 * @param $totDist
 	 * @param $totTime
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function exportRoute($type, $coords, $name, $totDist, $totTime, $myMapId = null): DataResponse {
 		// create /Maps directory if necessary
 		$userFolder = $this->userfolder;

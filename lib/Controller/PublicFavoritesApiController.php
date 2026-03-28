@@ -35,7 +35,7 @@ use OCP\AppFramework\PublicShareController;
 use OCP\IRequest;
 use OCP\ISession;
 
-class PublicFavoritesApiController extends PublicShareController {
+final class PublicFavoritesApiController extends PublicShareController {
 	/* @var FavoritesService */
 	private $favoritesService;
 
@@ -55,12 +55,17 @@ class PublicFavoritesApiController extends PublicShareController {
 		$this->favoritesService = $favoritesService;
 	}
 
+	/**
+	 * @return string
+	 *
+	 * @psalm-return ''
+	 */
 	public function getPasswordHash(): string {
 		return '';
 	}
 
 	/**
-	 * @return bool
+	 * @return false
 	 */
 	protected function isPasswordProtected(): bool {
 		return false;
@@ -93,10 +98,11 @@ class PublicFavoritesApiController extends PublicShareController {
 	}
 
 	/**
-	 * @PublicPage
-	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|404|500, array{share?: mixed, favorites?: mixed}, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getFavorites(): DataResponse {
 		try {
 			$share = $this->favoriteShareMapper->findByToken($this->getToken());

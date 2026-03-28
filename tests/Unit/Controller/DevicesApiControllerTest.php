@@ -81,8 +81,8 @@ class DevicesApiControllerTest extends \PHPUnit\Framework\TestCase {
 		$this->devicesApiController = new DevicesApiController(
 			$this->appName,
 			$this->request,
-			$c->query(IServerContainer::class),
-			$c->query(IServerContainer::class)->getConfig(),
+			$c->query(IServerContainer::class)->getRootFolder(),
+			$this->config,
 			$c->getServer()->get(\OCP\Share\IManager::class),
 			$c->getServer()->getAppManager(),
 			$c->getServer()->getUserManager(),
@@ -95,8 +95,8 @@ class DevicesApiControllerTest extends \PHPUnit\Framework\TestCase {
 		$this->devicesApiController2 = new DevicesApiController(
 			$this->appName,
 			$this->request,
-			$c->query(IServerContainer::class),
-			$c->query(IServerContainer::class)->getConfig(),
+			$c->query(IServerContainer::class)->getRootFolder(),
+			$this->config,
 			$c->getServer()->get(\OCP\Share\IManager::class),
 			$c->getServer()->getAppManager(),
 			$c->getServer()->getUserManager(),

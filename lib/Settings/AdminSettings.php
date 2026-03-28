@@ -7,7 +7,7 @@ use OCP\IConfig;
 use OCP\IL10N;
 use OCP\Settings\ISettings;
 
-class AdminSettings implements ISettings {
+final class AdminSettings implements ISettings {
 
 	public function __construct(
 		private IL10N $l,
@@ -17,6 +17,8 @@ class AdminSettings implements ISettings {
 
 	/**
 	 * @return TemplateResponse
+	 *
+	 * @psalm-return TemplateResponse<200, array<never, never>>
 	 */
 	public function getForm() {
 		$keys = [
@@ -42,17 +44,17 @@ class AdminSettings implements ISettings {
 
 	/**
 	 * @return string the section ID, e.g. 'sharing'
+	 *
+	 * @psalm-return 'additional'
 	 */
 	public function getSection() {
 		return 'additional';
 	}
 
 	/**
-	 * @return int whether the form should be rather on the top or bottom of
-	 *             the admin section. The forms are arranged in ascending order of the
-	 *             priority values. It is required to return a value between 0 and 100.
+	 * @return int whether the form should be rather on the top or bottom of the admin section. The forms are arranged in ascending order of the priority values. It is required to return a value between 0 and 100. E.g.: 70
 	 *
-	 * E.g.: 70
+	 * @psalm-return 5
 	 */
 	public function getPriority() {
 		return 5;

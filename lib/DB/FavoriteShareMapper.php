@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright Copyright (c) 2019, Paul Schwörer <hello@paulschwoerer.de>
+ * @copyright Copyright (c) 2019, Pafinal ul Schwörer <hello@paulschwoerer.de>
  *
  * @author Paul Schwörer <hello@paulschwoerer.de>
  *
@@ -50,11 +50,11 @@ class FavoriteShareMapper extends QBMapper {
 
 	/**
 	 * @param $token
-	 * @return Entity|null
+	 *
 	 * @throws DoesNotExistException
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function findByToken($token) {
+	public function findByToken($token): FavoriteShare {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -69,9 +69,8 @@ class FavoriteShareMapper extends QBMapper {
 	/**
 	 * @param $owner
 	 * @param $category
-	 * @return Entity
 	 */
-	public function create($owner, $category) {
+	public function create($owner, $category): FavoriteShare {
 		$token = $this->secureRandom->generate(
 			Constants::TOKEN_LENGTH,
 			ISecureRandom::CHAR_HUMAN_READABLE
@@ -87,9 +86,12 @@ class FavoriteShareMapper extends QBMapper {
 
 	/**
 	 * @param $owner
-	 * @return array|Entity[]
+	 *
+	 * @return FavoriteShare[]
+	 *
+	 * @psalm-return list<FavoriteShare>
 	 */
-	public function findAllByOwner($owner) {
+	public function findAllByOwner($owner): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -144,11 +146,11 @@ class FavoriteShareMapper extends QBMapper {
 	/**
 	 * @param $owner
 	 * @param $category
-	 * @return Entity
+	 *
 	 * @throws DoesNotExistException
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function findByOwnerAndCategory($owner, $category) {
+	public function findByOwnerAndCategory($owner, $category): FavoriteShare {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')

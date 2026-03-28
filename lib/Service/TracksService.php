@@ -16,6 +16,7 @@ use OC\Files\Search\SearchBinaryOperator;
 use OC\Files\Search\SearchComparison;
 use OC\Files\Search\SearchQuery;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\Files\File;
 use OCP\Files\FileInfo;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
@@ -27,7 +28,7 @@ use OCP\IL10N;
 use OCP\Share\IManager;
 use Psr\Log\LoggerInterface;
 
-class TracksService {
+final class TracksService {
 
 	public const TRACK_MIME_TYPES = ['application/gpx+xml'];
 
@@ -42,7 +43,10 @@ class TracksService {
 	) {
 	}
 
-	public function rescan($userId) {
+	/**
+	 * @psalm-return \Generator<int, mixed, mixed, void>
+	 */
+	public function rescan($userId): \Generator {
 		$userFolder = $this->root->getUserFolder($userId);
 		$tracks = $this->gatherTrackFiles($userFolder, true);
 		$this->deleteAllTracksFromDB($userId);
@@ -52,7 +56,7 @@ class TracksService {
 		}
 	}
 
-	public function addByFile(Node $file) {
+	public function addByFile(Node $file): void {
 		$userFolder = $this->root->getUserFolder($file->getOwner()->getUID());
 		if ($this->isTrack($file)) {
 			$this->addTrackToDB($file->getOwner()->getUID(), $file->getId(), $file);
@@ -61,7 +65,7 @@ class TracksService {
 
 	// add the file for its owner and users that have access
 	// check if it's already in DB before adding
-	public function safeAddByFile(Node $file) {
+	public function safeAddByFile(Node $file): bool {
 		$ownerId = $file->getOwner()->getUID();
 		$userFolder = $this->root->getUserFolder($ownerId);
 		if ($this->isTrack($file)) {
@@ -79,6 +83,9 @@ class TracksService {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function safeAddByFileIdUserId($fileId, $userId) {
 		$userFolder = $this->root->getUserFolder($userId);
 		$files = $userFolder->getById($fileId);
@@ -91,6 +98,9 @@ class TracksService {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function safeAddByFolderIdUserId($folderId, $userId) {
 		$folders = $this->root->getById($folderId);
 		if (empty($folders)) {
@@ -106,7 +116,7 @@ class TracksService {
 	}
 
 	// avoid adding track if it already exists in the DB
-	private function safeAddTrack($track, $userId) {
+	private function safeAddTrack(Node $track, string $userId): void {
 		// filehooks are triggered several times (2 times for file creation)
 		// so we need to be sure it's not inserted several times
 		// by checking if it already exists in DB
@@ -117,14 +127,14 @@ class TracksService {
 	}
 
 	// add all tracks of a folder taking care of shared accesses
-	public function safeAddByFolder($folder) {
+	public function safeAddByFolder(Folder $folder): void {
 		$tracks = $this->gatherTrackFiles($folder, true);
 		foreach ($tracks as $track) {
 			$this->safeAddByFile($track);
 		}
 	}
 
-	public function addByFolder(Node $folder) {
+	public function addByFolder(Folder $folder): void {
 		$tracks = $this->gatherTrackFiles($folder, true);
 		foreach ($tracks as $track) {
 			$this->addTrackToDB($folder->getOwner()->getUID(), $track->getId(), $track);
@@ -133,7 +143,7 @@ class TracksService {
 
 	// delete track only if it's not accessible to user anymore
 	// it might have been shared multiple times by different users
-	public function safeDeleteByFileIdUserId($fileId, $userId) {
+	public function safeDeleteByFileIdUserId($fileId, $userId): void {
 		$userFolder = $this->root->getUserFolder($userId);
 		$files = $userFolder->getById($fileId);
 		if (!is_array($files) or count($files) === 0) {
@@ -141,11 +151,11 @@ class TracksService {
 		}
 	}
 
-	public function deleteByFile(Node $file) {
+	public function deleteByFile(Node $file): void {
 		$this->deleteByFileId($file->getId());
 	}
 
-	public function deleteByFolder(Node $folder) {
+	public function deleteByFolder(Folder $folder): void {
 		$tracks = $this->gatherTrackFiles($folder, true);
 		foreach ($tracks as $track) {
 			$this->deleteByFileId($track->getId());
@@ -153,7 +163,7 @@ class TracksService {
 	}
 
 	// delete folder tracks only if it's not accessible to user anymore
-	public function safeDeleteByFolderIdUserId($folderId, $userId) {
+	public function safeDeleteByFolderIdUserId($folderId, $userId): void {
 		$userFolder = $this->root->getUserFolder($userId);
 		$folders = $userFolder->getById($folderId);
 		if (is_array($folders) and count($folders) === 1) {
@@ -165,7 +175,7 @@ class TracksService {
 		}
 	}
 
-	private function gatherTrackFiles($folder, $recursive) {
+	private function gatherTrackFiles(Folder $folder, bool $recursive): array {
 		$notes = [];
 		$nodes = $folder->getDirectoryListing();
 		foreach ($nodes as $node) {
@@ -186,7 +196,7 @@ class TracksService {
 		return $notes;
 	}
 
-	private function isTrack($file) {
+	private function isTrack(Node $file): bool {
 		if ($file->getType() !== \OCP\Files\FileInfo::TYPE_FILE) {
 			return false;
 		}
@@ -196,7 +206,12 @@ class TracksService {
 		return true;
 	}
 
-	private function dbRowToTrack($row, $folder, $userFolder, $defaultMap, $ignoredPaths) {
+	/**
+	 * @return (int|mixed)[]|null
+	 *
+	 * @psalm-return array{id: int, file_id: int, color: mixed, metadata: mixed, etag: mixed, path: mixed, isShareable: mixed, isDeletable: mixed, isUpdateable: mixed, isReadable: mixed, mtime: mixed, file_name: mixed, file_path: mixed}|null
+	 */
+	private function dbRowToTrack($row, Folder $folder, Folder $userFolder, bool $defaultMap, array $ignoredPaths): ?array {
 		// avoid tracks that are not in "this map's" folder
 		$files = $folder->getById(intval($row['file_id']));
 		if (empty($files)) {
@@ -245,8 +260,11 @@ class TracksService {
 
 	/**
 	 * @param string $userId
+	 * @param Folder|\OCP\Files\File|null $folder
+	 *
+	 * @psalm-return list<mixed>
 	 */
-	public function getTracksFromDB($userId, $folder = null, bool $respectNomediaAndNoimage = true, bool $hideTracksOnCustomMaps = false, bool $hideTracksInMapsFolder = true) {
+	public function getTracksFromDB($userId, \OCP\Files\File|Folder|null $folder = null, bool $respectNomediaAndNoimage = true, bool $hideTracksOnCustomMaps = false, bool $hideTracksInMapsFolder = true): array {
 		$ignoredPaths = $respectNomediaAndNoimage ? $this->getIgnoredPaths($userId, $folder, $hideTracksOnCustomMaps) : [];
 		if ($hideTracksInMapsFolder) {
 			$ignoredPaths[] = '/Maps';
@@ -281,12 +299,16 @@ class TracksService {
 	/**
 	 * @param $userId
 	 * @param $folder
-	 * @return array
+	 *
+	 * @return (null|string)[]
+	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return list{0?: null|string,...}
 	 */
-	private function getIgnoredPaths($userId, $folder = null, $hideImagesOnCustomMaps = true) {
+	private function getIgnoredPaths(string $userId, $folder = null, bool $hideImagesOnCustomMaps = true): array {
 		$ignoredPaths = [];
 		$userFolder = $this->root->getUserFolder($userId);
 		if (is_null($folder)) {
@@ -318,7 +340,10 @@ class TracksService {
 		return $ignoredPaths;
 	}
 
-	public function getTrackFromDB($id, $userId = null) {
+	/**
+	 * @param null|string $userId
+	 */
+	public function getTrackFromDB($id, ?string $userId = null) {
 		$track = null;
 		$qb = $this->dbconnection->getQueryBuilder();
 		$qb->select('id', 'file_id', 'color', 'metadata', 'etag')
@@ -418,7 +443,7 @@ class TracksService {
 		return $track;
 	}
 
-	public function addTrackToDB($userId, $fileId, $file) {
+	public function addTrackToDB(?string $userId, int $fileId, Node $file): int {
 		$metadata = '';
 		$etag = $file->getEtag();
 		$qb = $this->dbconnection->getQueryBuilder();
@@ -505,7 +530,7 @@ class TracksService {
 		$qb->executeStatement();
 	}
 
-	public function generateTrackMetadata($file) {
+	public function generateTrackMetadata(File $file): ?string {
 		$DISTANCE_BETWEEN_SHORT_POINTS = 300;
 		$STOPPED_SPEED_THRESHOLD = 0.9;
 
@@ -928,7 +953,10 @@ class TracksService {
 		return $result;
 	}
 
-	private function getDistanceFilteredPoints($points) {
+	/**
+	 * @psalm-return list{0?: mixed, 1?: mixed,...}
+	 */
+	private function getDistanceFilteredPoints(\SimpleXMLElement $points): array {
 		$DISTANCE_THRESHOLD = 10;
 
 		$distFilteredPoints = [];
@@ -946,7 +974,10 @@ class TracksService {
 		return $distFilteredPoints;
 	}
 
-	private function getMaxSpeed($points) {
+	/**
+	 * @psalm-param list<mixed> $points
+	 */
+	private function getMaxSpeed(array $points) {
 		$maxSpeed = 0;
 
 		if (count($points) > 0) {
@@ -973,9 +1004,16 @@ class TracksService {
 	}
 
 	/**
+	 *
 	 * inspired by https://www.gpsvisualizer.com/tutorials/elevation_gain.html
+	 *
+	 * @psalm-param list<mixed> $points
+	 *
+	 * @return (float|int)[]
+	 *
+	 * @psalm-return list{0|float, 0|float}
 	 */
-	private function getElevationGainLoss($points) {
+	private function getElevationGainLoss(array $points): array {
 		$ELEVATION_THRESHOLD = 6;
 		$gain = 0;
 		$loss = 0;
@@ -1002,7 +1040,7 @@ class TracksService {
 /*
  * return distance between these two gpx points in meters
  */
-function distance($p1, $p2) {
+function distance($p1, $p2): int|float {
 
 	$lat1 = (float)$p1['lat'];
 	$long1 = (float)$p1['lon'];

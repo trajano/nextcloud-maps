@@ -35,7 +35,7 @@ use OCP\IUserManager;
 use OCP\Share\Exceptions\ShareNotFound;
 use OCP\Share\IManager;
 
-class PublicFavoritesController extends PublicPageController {
+final class PublicFavoritesController extends PublicPageController {
 
 	private string $appVersion;
 	private IL10N $l;
@@ -141,7 +141,7 @@ class PublicFavoritesController extends PublicPageController {
 	 * @return mixed
 	 * @throws NotPermittedException
 	 */
-	private function getJSONFavoritesFile(\OCP\Files\Folder $folder, $isCreatable): \OCP\Files\Node {
+	private function getJSONFavoritesFile(\OCP\Files\Folder $folder, bool $isCreatable): \OCP\Files\Node {
 		try {
 			$file = $folder->get('.favorites.json');
 		} catch (NotFoundException $e) {
@@ -156,11 +156,15 @@ class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200, array, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getFavorites(): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -184,18 +188,21 @@ class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
+	 *
 	 * @param string|null $name
 	 * @param float $lat
 	 * @param float $lng
 	 * @param string|null $category
 	 * @param string|null $comment
 	 * @param string|null $extensions
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function addFavorite(?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions): DataResponse {
 		if (is_numeric($lat) && is_numeric($lng)) {
 			$share = $this->getShare();
@@ -218,13 +225,18 @@ class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
+	 *
 	 * @param array $favorites
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, list{0?: mixed,...}, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function addFavorites(array $favorites): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -248,7 +260,7 @@ class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
+	 *
 	 * @param int $id
 	 * @param string|null $name
 	 * @param float $lat
@@ -256,11 +268,14 @@ class PublicFavoritesController extends PublicPageController {
 	 * @param string|null $category
 	 * @param string|null $comment
 	 * @param string|null $extensions
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function editFavorite(int $id, ?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -290,14 +305,19 @@ class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
+	 *
 	 * @param array $categories
 	 * @param string $newName
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, 'RENAMED', array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function renameCategories(array $categories, string $newName): DataResponse {
 		if (is_array($categories)) {
 			$share = $this->getShare();
@@ -319,13 +339,18 @@ class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
+	 *
 	 * @param int $id
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function deleteFavorite(int $id): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -345,13 +370,18 @@ class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
+	 *
 	 * @param array $ids
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function deleteFavorites(array $ids): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -368,11 +398,13 @@ class PublicFavoritesController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getSharedCategories(): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();

@@ -23,10 +23,9 @@ use Symfony\Component\Console\Input\InputInterface;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RescanTracks extends Command {
+final class RescanTracks extends Command {
 
 	protected IUserManager $userManager;
-	protected OutputInterface $output;
 	protected IManager $encryptionManager;
 	protected TracksService $tracksService;
 	protected IConfig $config;
@@ -51,13 +50,19 @@ class RescanTracks extends Command {
 			);
 	}
 
+	/**
+	 * @return int
+	 *
+	 * @psalm-return 0|1
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		if ($this->encryptionManager->isEnabled()) {
 			$output->writeln('Encryption is enabled. Aborted.');
 			return 1;
 		}
-		$this->output = $output;
-		$userId = $input->getArgument('user_id');
+		/** @var string|null $userIdArgument */
+		$userIdArgument = $input->getArgument('user_id');
+		$userId = is_string($userIdArgument) ? $userIdArgument : null;
 		if ($userId === null) {
 			$this->userManager->callForSeenUsers(function (IUser $user) {
 				$this->rescanUserTracks($user->getUID());
@@ -71,10 +76,13 @@ class RescanTracks extends Command {
 		return 0;
 	}
 
-	private function rescanUserTracks($userId) {
+	private function rescanUserTracks(string $userId): void {
 		echo '======== User ' . $userId . ' ========' . "\n";
 		$c = 1;
 		foreach ($this->tracksService->rescan($userId) as $path) {
+			if (!is_string($path)) {
+				continue;
+			}
 			echo '[' . $c . '] Track "' . $path . '" added' . "\n";
 			$c++;
 		}

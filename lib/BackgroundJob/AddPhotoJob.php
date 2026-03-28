@@ -20,7 +20,7 @@ use OCP\ICache;
 
 use OCP\ICacheFactory;
 
-class AddPhotoJob extends QueuedJob {
+final class AddPhotoJob extends QueuedJob {
 
 	/** @var PhotofilesService */
 	private PhotofilesService $photofilesService;
@@ -55,16 +55,21 @@ class AddPhotoJob extends QueuedJob {
 		$this->backgroundJobCache = $this->cacheFactory->createDistributed('maps:background-jobs');
 	}
 
-	public function run($argument) {
-		$userFolder = $this->root->getUserFolder($argument['userId']);
-		$files = $userFolder->getById($argument['photoId']);
+	/**
+	 * @param array{userId: string, photoId: int} $argument
+	 */
+	public function run($argument): void {
+		$userId = $argument['userId'];
+		$photoId = $argument['photoId'];
+		$userFolder = $this->root->getUserFolder($userId);
+		$files = $userFolder->getById($photoId);
 		if (empty($files)) {
 			return;
 		}
 		$file = array_shift($files);
-		$this->photofilesService->addPhotoNow($file, $argument['userId']);
+		$this->photofilesService->addPhotoNow($file, $userId);
 
-		$counter = $this->backgroundJobCache->get('recentlyAdded:' . $argument['userId']) ?? 0;
-		$this->backgroundJobCache->set('recentlyAdded:' . $argument['userId'], (int)$counter + 1, 60 * 60 * 3);
+		$counter = (int)($this->backgroundJobCache->get('recentlyAdded:' . $userId) ?? 0);
+		$this->backgroundJobCache->set('recentlyAdded:' . $userId, $counter + 1, 60 * 60 * 3);
 	}
 }

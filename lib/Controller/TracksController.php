@@ -26,7 +26,7 @@ use OCP\Share\IManager;
 
 use function OCA\Maps\Helper\remove_utf8_bom;
 
-class TracksController extends Controller {
+final class TracksController extends Controller {
 
 	private $userId;
 	private $userfolder;
@@ -69,11 +69,13 @@ class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getTracks($myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
 			$tracks = $this->tracksService->getTracksFromDB($this->userId, $this->userfolder, true, false, true);
@@ -86,9 +88,11 @@ class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
+	 * @return DataResponse
 	 */
-	public function getTrackContentByFileId($id) {
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	public function getTrackContentByFileId($id): DataResponse {
 		$track = $this->tracksService->getTrackByFileIDFromDB($id, $this->userId);
 		$res = is_null($track) ? null : $this->userfolder->getById($track['file_id']);
 		if (is_array($res) and count($res) > 0) {
@@ -116,12 +120,15 @@ class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getTrackFileContent($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id);
 		$res = is_null($track) ? null : $this->userfolder->getById($track['file_id']);
@@ -150,13 +157,15 @@ class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $id
 	 * @param $color
 	 * @param $metadata
 	 * @param $etag
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function editTrack($id, $color, $metadata, $etag): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id, $this->userId);
 		if ($track !== null) {
@@ -168,10 +177,12 @@ class TracksController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteTrack($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id, $this->userId);
 		if ($track !== null) {

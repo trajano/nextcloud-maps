@@ -118,9 +118,10 @@ class PublicPageController extends AuthPublicShareController {
 	}
 
 	/**
-	 * @PublicPage
-	 * @NoCSRFRequired
+	 * @return PublicTemplateResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function showShare(): PublicTemplateResponse {
 		$shareNode = $this->getShareNode();
 
@@ -138,12 +139,13 @@ class PublicPageController extends AuthPublicShareController {
 	}
 
 	/**
-	 * @PublicPage
-	 * @NoCSRFRequired
-	 *
 	 * Show the authentication page
 	 * The form has to submit to the authenticate method route
+	 *
+	 * @return PublicTemplateResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function showAuthenticate(): PublicTemplateResponse {
 		$templateParameters = ['share' => $this->share];
 
@@ -161,7 +163,12 @@ class PublicPageController extends AuthPublicShareController {
 	}
 
 	/**
+	 *
 	 * The template to show when authentication failed
+	 *
+	 * @return PublicTemplateResponse
+	 *
+	 * @psalm-return PublicTemplateResponse<array<string, mixed>, 200>
 	 */
 	protected function showAuthFailed(): PublicTemplateResponse {
 		$templateParameters = ['share' => $this->share, 'wrongpw' => true];
@@ -180,7 +187,12 @@ class PublicPageController extends AuthPublicShareController {
 	}
 
 	/**
+	 *
 	 * The template to show after user identification
+	 *
+	 * @return PublicTemplateResponse
+	 *
+	 * @psalm-return PublicTemplateResponse<array<string, mixed>, 200>
 	 */
 	protected function showIdentificationResult(bool $success = false): PublicTemplateResponse {
 		$templateParameters = ['share' => $this->share, 'identityOk' => $success];
@@ -201,9 +213,12 @@ class PublicPageController extends AuthPublicShareController {
 
 	/**
 	 * @param $response
+	 *
 	 * @return void
+	 *
+	 * @psalm-param PublicTemplateResponse<array<string, mixed>, 200> $response
 	 */
-	private function addCsp($response): void {
+	private function addCsp(PublicTemplateResponse $response): void {
 		if (class_exists('OCP\AppFramework\Http\ContentSecurityPolicy')) {
 			$csp = new \OCP\AppFramework\Http\ContentSecurityPolicy();
 			// map tiles

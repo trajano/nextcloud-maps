@@ -33,7 +33,7 @@ use OCP\Share\IManager;
 
 //use function \OCA\Maps\Service\endswith;
 
-class DevicesController extends Controller {
+final class DevicesController extends Controller {
 
 	private $userId;
 	private $userfolder;
@@ -88,11 +88,13 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param ?string[] $tokens
 	 * @param ?int $myMapId
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevices($tokens = null, $myMapId = null): DataResponse {
 		if (is_null($tokens)) {
 			$tokens = [];
@@ -122,21 +124,25 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param string[] $tokens
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevicesByTokens(array $tokens): DataResponse {
 		$devices = $this->devicesService->getDevicesByTokens($tokens);
 		return new DataResponse(array_values($devices));
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $id
 	 * @param int $pruneBefore
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevicePoints($id, ?int $pruneBefore = 0, ?int $limit = 10000, ?int $offset = 0, ?array $tokens = null): DataResponse {
 		if (is_null($tokens)) {
 			$points = $this->devicesService->getDevicePointsFromDB($this->userId, $id, $pruneBefore, $limit, $offset);
@@ -147,7 +153,7 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $lat
 	 * @param $lng
 	 * @param null $timestamp
@@ -155,8 +161,10 @@ class DevicesController extends Controller {
 	 * @param null $altitude
 	 * @param null $battery
 	 * @param null $accuracy
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addDevicePoint($lat, $lng, $timestamp = null, $user_agent = null, $altitude = null, $battery = null, $accuracy = null): DataResponse {
 		if (is_numeric($lat) and is_numeric($lng)) {
 			$ts = $timestamp;
@@ -179,12 +187,14 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $id
 	 * @param $color
 	 * @param $name
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function editDevice($id, $color, $name): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
@@ -203,10 +213,12 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $id
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteDevice($id): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
@@ -219,14 +231,16 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param ?array $deviceIdList
 	 * @param int $begin
 	 * @param int $end
 	 * @param bool $all=false
+	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function exportDevices($deviceIdList, $begin, $end, bool $all = false): DataResponse {
 		// sorry about ugly deviceIdList management:
 		// when an empty list is passed in http request, we get null here
@@ -276,12 +290,15 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param $path
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function importDevices($path): DataResponse {
 		$userFolder = $this->userfolder;
 		$cleanpath = str_replace(['../', '..\\'], '', $path);
@@ -311,9 +328,12 @@ class DevicesController extends Controller {
 	/**
 	 * @param $string
 	 * @param $test
+	 *
 	 * @return bool
+	 *
+	 * @psalm-param '.gpx'|'.kml'|'.kmz' $test
 	 */
-	private function endsWith($string, $test): bool {
+	private function endsWith(string $string, string $test): bool {
 		$strlen = strlen($string);
 		$testlen = strlen($test);
 		if ($testlen > $strlen) {
@@ -323,12 +343,15 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param int|null $myMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getSharedDevices(?int $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
 			$sharedDevices = [];
@@ -342,12 +365,14 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param int $id
 	 * @param int $timestampFrom
 	 * @param int $timestampTo
+	 *
 	 * @return DataResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function shareDevice(int $id, int $timestampFrom, int $timestampTo): DataResponse {
 		$device = $this->devicesService->getDeviceFromDB($id, $this->userId);
 		if ($device !== null) {
@@ -364,12 +389,15 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param int $token
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotPermittedException
 	 * @throws NotFoundException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function removeDeviceShare(int $token): DataResponse {
 		try {
 			$share = $this->deviceShareMapper->findByToken($token);
@@ -385,12 +413,15 @@ class DevicesController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
+	 *
 	 * @param string $token
 	 * @param $targetMapId
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addSharedDeviceToMap(string $token, $targetMapId): DataResponse {
 		try {
 			$share = $this->deviceShareMapper->findByToken($token);

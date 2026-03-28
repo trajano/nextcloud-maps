@@ -33,7 +33,7 @@ use OCP\Share\IManager as ShareManager;
 
 use function OCA\Maps\Helper\remove_utf8_bom;
 
-class PublicTracksController extends PublicPageController {
+final class PublicTracksController extends PublicPageController {
 
 	protected IConfig $config;
 	protected ShareManager $shareManager;
@@ -118,12 +118,15 @@ class PublicTracksController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return DataResponse<200, array, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getTracks(): DataResponse {
 		$share = $this->getShare();
 		$hideDownload = (bool)$share->getHideDownload();
@@ -150,14 +153,18 @@ class PublicTracksController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
-	public function getTrackContentByFileId($id) {
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	public function getTrackContentByFileId($id): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
 		$folder = $this->getShareNode();
@@ -193,12 +200,16 @@ class PublicTracksController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws \OCP\Files\InvalidPathException
+	 *
+	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getTrackFileContent($id): DataResponse {
 		$track = $this->tracksService->getTrackFromDB($id);
 		$res = is_null($track) ? null : $this->getShareNode()->getById($track['file_id']);
@@ -227,15 +238,19 @@ class PublicTracksController extends PublicPageController {
 	}
 
 	/**
-	 * @PublicPage
 	 * @param $id
 	 * @param $color
 	 * @param $metadata
 	 * @param $etag
+	 *
 	 * @return DataResponse
+	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
+	 *
+	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function editTrack($id, $color, $metadata, $etag): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();
@@ -256,10 +271,13 @@ class PublicTracksController extends PublicPageController {
 	}
 
 	/**
-	 * @NoAdminRequired
 	 * @param $id
+	 *
 	 * @return DataResponse
+	 *
+	 * @psalm-return DataResponse<200|400, string, array<never, never>>
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteTrack($id): DataResponse {
 		$share = $this->getShare();
 		$permissions = $share->getPermissions();

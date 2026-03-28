@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright Copyright (c) 2019 Julien Veyssier <eneiluj@posteo.net>
+ * @copyright Copyright (c) 2019 Julien Veyssier <eneifinal luj@posteo.net>
  *
  * @author Julien Veyssier <eneiluj@posteo.net>
  *
@@ -53,10 +53,14 @@ class InstallScan implements IRepairStep {
 	}
 
 	/**
+	 *
 	 * Returns the step's name
 	 *
 	 * @return string
+	 *
 	 * @since 9.1.0
+	 *
+	 * @psalm-return 'Scan photos and tracks in users storages'
 	 */
 	public function getName() {
 		return 'Scan photos and tracks in users storages';
@@ -64,6 +68,10 @@ class InstallScan implements IRepairStep {
 
 	/**
 	 * @param IOutput $output
+	 *
+	 * @return int|null
+	 *
+	 * @psalm-return 1|null
 	 */
 	public function run(IOutput $output) {
 		if (!$this->shouldRun()) {
@@ -84,7 +92,7 @@ class InstallScan implements IRepairStep {
 		$this->jobList->add(LaunchUsersInstallScanJob::class, []);
 	}
 
-	protected function shouldRun() {
+	protected function shouldRun(): bool {
 		$appVersion = $this->config->getAppValue('maps', 'installed_version', '0.0.0');
 		return version_compare($appVersion, '0.0.10', '<');
 	}

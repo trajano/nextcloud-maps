@@ -21,7 +21,7 @@ jobs:
   matrix:
     runs-on: ubuntu-latest
     outputs:
-      php-version: ${{ steps.versions.outputs.php-available-list }}
+      php-version: ${{ steps.php.outputs.php-version }}
       server-versions: ${{ steps.versions.outputs.branches }}
     steps:
       - name: Checkout app
@@ -32,6 +32,12 @@ jobs:
       - name: Get version matrix
         id: versions
         uses: icewind1991/nextcloud-version-matrix@8a7bac6300b2f0f3100088b297995a229558ddba # v1.3.2.3.1.3.2
+
+      - name: Filter PHP versions to 8.3+
+        id: php
+        run: |
+          php_versions=$(echo '${{ steps.versions.outputs.php-available-list }}' | jq -c 'map(select((split(".")[0] | tonumber) > 8 or ((split(".")[0] | tonumber) == 8 and (split(".")[1] | tonumber) >= 3)))')
+          echo "php-version=${php_versions}" >> $GITHUB_OUTPUT
 
   changes:
     runs-on: ubuntu-latest
@@ -77,8 +83,7 @@ jobs:
       - name: Set app env
         if: ${{ env.APP_NAME == '' }}
         run: |
-          # Split and keep last
-          echo "APP_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
+          echo "APP_NAME=maps" >> $GITHUB_ENV
 
       - name: Checkout server
         uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
@@ -193,27 +198,3 @@ jobs:
     steps:
       - name: Summary status
         run: if ${{ needs.changes.outputs.src != 'false' && needs.phpunit-sqlite.result != 'success' }}; then exit 1; fi
-
-  legacy:
-    permissions:
-      contents: none
-    runs-on: ubuntu-latest
-    needs: [summary]
-
-    if: always()
-    name: Nextcloud stable31 php8.3 unit tests
-    steps:
-      - name: Summary status
-        run: if ${{ needs.summary.result != 'success' }}; then exit 1; fi
-
-  legacy31:
-    permissions:
-      contents: none
-    runs-on: ubuntu-latest
-    needs: [summary]
-
-    if: always()
-    name: Nextcloud stable31 php8.4 unit tests
-    steps:
-      - name: Summary status
-        run: if ${{ needs.summary.result != 'success' }}; then exit 1; fi

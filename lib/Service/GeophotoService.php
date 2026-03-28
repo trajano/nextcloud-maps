@@ -31,7 +31,7 @@ use OCP\IPreview;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
-class GeophotoService {
+final class GeophotoService {
 
 	private $l10n;
 	private $root;
@@ -178,11 +178,15 @@ class GeophotoService {
 	 * @param string|null $timezone locale time zone used by images
 	 * @param int $limit
 	 * @param int $offset
-	 * @return array with geodatas of all nonLocalizedPhotos
+	 *
+	 * @return \stdClass[][] with geodatas of all nonLocalizedPhotos
+	 *
 	 * @throws Exception
 	 * @throws NoUserException
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
+	 *
+	 * @psalm-return array<list{\stdClass,...}>
 	 */
 	public function getNonLocalized(string $userId, $folder = null, bool $respectNomediaAndNoimage = true, bool $hideImagesOnCustomMaps = false, bool $hideImagesInMapsFolder = true, ?string $timezone = null, int $limit = 250, int $offset = 0): array {
 		$userFolder = $this->getFolderForUser($userId);
@@ -269,12 +273,16 @@ class GeophotoService {
 	/**
 	 * @param $userId
 	 * @param $folder
-	 * @return array
+	 *
+	 * @return (null|string)[]
+	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
+	 *
+	 * @psalm-return list{0?: null|string,...}
 	 */
-	private function getIgnoredPaths($userId, $folder = null, $hideImagesOnCustomMaps = true) {
+	private function getIgnoredPaths(string $userId, ?Folder $folder = null, bool $hideImagesOnCustomMaps = true): array {
 		$ignoredPaths = [];
 		$userFolder = $this->getFolderForUser($userId);
 		if (is_null($folder)) {
@@ -307,10 +315,14 @@ class GeophotoService {
 	}
 
 	/**
+	 *
 	 * returns a array of locations for a given date
 	 *
 	 * @param $dateTaken int
-	 * @return array
+	 *
+	 * @return array[]
+	 *
+	 * @psalm-return array<array>
 	 */
 	private function getLocationGuesses(int $dateTaken): array {
 		$locations = [];
@@ -328,7 +340,7 @@ class GeophotoService {
 	 * Timeordered Point sets is an Array of Arrays with time => location as key=>value pair, which are orderd by the key.
 	 * This function loads this Arrays from all Track files of the user.
 	 */
-	private function loadTimeorderedPointSets(string $userId, $folder = null, bool $respectNomediaAndNoimage = true, bool $hideTracksOnCustomMaps = false, bool $hideTracksInMapsFolder = true): void {
+	private function loadTimeorderedPointSets(string $userId, ?Folder $folder = null, bool $respectNomediaAndNoimage = true, bool $hideTracksOnCustomMaps = false, bool $hideTracksInMapsFolder = true): void {
 		$key = $userId . ':' . (string)$respectNomediaAndNoimage . ':' . (string)$hideTracksOnCustomMaps . ':' . (string)$hideTracksInMapsFolder;
 		$this->timeorderedPointSets = $this->timeOrderedPointSetsCache->get($key);
 		if (is_null($this->timeorderedPointSets)) {
@@ -357,7 +369,12 @@ class GeophotoService {
 	 * @param $content
 	 * @return array
 	 */
-	private function getTracksFromGPX($content): array {
+	/**
+	 * @return \SimpleXMLElement[]
+	 *
+	 * @psalm-return list<\SimpleXMLElement>
+	 */
+	private function getTracksFromGPX(string $content): array {
 		$tracks = [];
 		libxml_use_internal_errors(false);
 		$gpx = simplexml_load_string($content);
@@ -385,6 +402,11 @@ class GeophotoService {
 	 * Loads all trackpoints from a given $track SimpleXMLObject. And stores them in a time=>location stuctured array which is sorted by the key.
 	 * @param $track
 	 * @return array
+	 */
+	/**
+	 * @return string[][]
+	 *
+	 * @psalm-return array<int, list{string, string}>
 	 */
 	private function getTimeorderdPointsFromTrack($track): array {
 		$points = [];
@@ -414,6 +436,8 @@ class GeophotoService {
 	/**
 	 * @param $dateTaken int timestamp of the picture
 	 * @param $points array sorted by keys timestamp => [lat, lng]
+	 *
+	 * @psalm-return list{mixed, mixed}|null
 	 */
 	private function getLocationFromSequenceOfPoints(int $dateTaken, array $points): ?array {
 		$foo = end($points);
@@ -444,6 +468,11 @@ class GeophotoService {
 		}
 	}
 
+	/**
+	 * @return string[]
+	 *
+	 * @psalm-return list<'image/jpeg'|'image/tiff'>
+	 */
 	private function getPreviewEnabledMimetypes(): array {
 		$enabledMimeTypes = [];
 		foreach (PhotofilesService::PHOTO_MIME_TYPES as $mimeType) {
@@ -454,7 +483,14 @@ class GeophotoService {
 		return $enabledMimeTypes;
 	}
 
-	private function normalizePath($path) {
+	/**
+	 * @param null|string $path
+	 *
+	 * @return string|string[]
+	 *
+	 * @psalm-return array<string>|string
+	 */
+	private function normalizePath(?string $path): array|string {
 		return str_replace('files', '', $path);
 	}
 

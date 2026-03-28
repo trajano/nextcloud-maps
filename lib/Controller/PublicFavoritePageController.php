@@ -38,7 +38,7 @@ use OCP\ISession;
 use OCP\IUserManager;
 use OCP\Util;
 
-class PublicFavoritePageController extends PublicShareController {
+final class PublicFavoritePageController extends PublicShareController {
 	private $config;
 
 	/* @var FavoriteShareMapper */
@@ -57,14 +57,14 @@ class PublicFavoritePageController extends PublicShareController {
 	}
 
 	/**
-	 * @param $token
-	 *
 	 * @return DataResponse|PublicTemplateResponse
 	 *
-	 * @PublicPage
-	 * @NoCSRFRequired
+	 *
+	 *
 	 */
-	public function sharedFavoritesCategory($token) {
+	#[\OCP\AppFramework\Http\Attribute\PublicPage]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	public function sharedFavoritesCategory(string $token): PublicTemplateResponse|DataResponse {
 		if ($token === '') {
 			return new DataResponse([], Http::STATUS_BAD_REQUEST);
 		}
@@ -93,12 +93,17 @@ class PublicFavoritePageController extends PublicShareController {
 	}
 
 	/**
+	 *
 	 * Get a hash of the password for this share
 	 *
 	 * To ensure access is blocked when the password to a share is changed we store
 	 * a hash of the password for this token.
 	 *
 	 * @since 14.0.0
+	 *
+	 * @return string
+	 *
+	 * @psalm-return ''
 	 */
 	protected function getPasswordHash(): string {
 		return '';
@@ -123,9 +128,11 @@ class PublicFavoritePageController extends PublicShareController {
 	}
 
 	/**
+	 *
 	 * Is a share with this token password protected
 	 *
-	 * @return bool
+	 * @return false
+	 *
 	 * @since 14.0.0
 	 */
 	protected function isPasswordProtected(): bool {
@@ -134,9 +141,12 @@ class PublicFavoritePageController extends PublicShareController {
 
 	/**
 	 * @param $response
+	 *
 	 * @return void
+	 *
+	 * @psalm-param PublicTemplateResponse<array<string, mixed>, 200> $response
 	 */
-	private function addCsp($response): void {
+	private function addCsp(PublicTemplateResponse $response): void {
 		if (class_exists('OCP\AppFramework\Http\ContentSecurityPolicy')) {
 			$csp = new ContentSecurityPolicy();
 			// map tiles

@@ -21,6 +21,7 @@ use OCA\Maps\Helper\ExifDataNoLocationException;
 use OCA\Maps\Helper\ExifGeoData;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\BackgroundJob\IJobList;
+use OCP\Files\File;
 use OCP\Files\FileInfo;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
@@ -41,7 +42,7 @@ use lsolesen\pel\PelJpeg;
 use lsolesen\pel\PelTag;
 use lsolesen\pel\PelTiff;
 
-class PhotofilesService {
+final class PhotofilesService {
 
 	public const PHOTO_MIME_TYPES = ['image/jpeg', 'image/tiff'];
 
@@ -73,7 +74,12 @@ class PhotofilesService {
 		$this->backgroundJobCache = $this->cacheFactory->createDistributed('maps:background-jobs');
 	}
 
-	public function rescan($userId, $inBackground = true, $pathToScan = null) {
+	/**
+	 * @param null|string $pathToScan
+	 *
+	 * @psalm-return \Generator<int, mixed, mixed, void>
+	 */
+	public function rescan(string $userId, bool $inBackground = true, ?string $pathToScan = null): \Generator {
 		$this->photosCache->clear($userId);
 		$userFolder = $this->root->getUserFolder($userId);
 		if ($pathToScan === null) {
@@ -95,7 +101,7 @@ class PhotofilesService {
 
 	// add the file for its owner and users that have access
 	// check if it's already in DB before adding
-	public function addByFile(Node $file) {
+	public function addByFile(Node $file): bool {
 		if ($this->isPhoto($file)) {
 			$ownerId = $file->getOwner()->getUID();
 			$this->addPhoto($file, $ownerId);
@@ -114,6 +120,9 @@ class PhotofilesService {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function addByFileIdUserId($fileId, $userId) {
 		$userFolder = $this->root->getUserFolder($userId);
 		$files = $userFolder->getById($fileId);
@@ -126,6 +135,9 @@ class PhotofilesService {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function addByFolderIdUserId($folderId, $userId) {
 		$folders = $this->root->getById($folderId);
 		if (empty($folders)) {
@@ -141,18 +153,18 @@ class PhotofilesService {
 	}
 
 	// add all photos of a folder taking care of shared accesses
-	public function addByFolder($folder) {
+	public function addByFolder(Folder $folder): void {
 		$photos = $this->gatherPhotoFiles($folder, true);
 		foreach ($photos as $photo) {
 			$this->addByFile($photo);
 		}
 	}
 
-	public function updateByFile(Node $file) {
+	public function updateByFile(Node $file): void {
 		$this->jobList->add(UpdatePhotoByFileJob::class, ['fileId' => $file->getId(), 'userId' => $file->getOwner()->getUID()]);
 	}
 
-	public function updateByFileNow(Node $file) {
+	public function updateByFileNow(Node $file): void {
 		if ($this->isPhoto($file)) {
 			$exif = $this->getExif($file);
 			if (!is_null($exif)) {
@@ -169,13 +181,13 @@ class PhotofilesService {
 		}
 	}
 
-	public function deleteByFile(Node $file) {
+	public function deleteByFile(Node $file): void {
 		$this->photoMapper->deleteByFileId($file->getId());
 	}
 
 	// delete photo only if it's not accessible to user anymore
 	// it might have been shared multiple times by different users
-	public function deleteByFileIdUserId($fileId, $userId) {
+	public function deleteByFileIdUserId($fileId, $userId): void {
 		$userFolder = $this->root->getUserFolder($userId);
 		$files = $userFolder->getById($fileId);
 		if (!is_array($files) or count($files) === 0) {
@@ -185,7 +197,7 @@ class PhotofilesService {
 	}
 
 
-	public function deleteByFolder(Node $folder) {
+	public function deleteByFolder(Folder $folder): void {
 		$photos = $this->gatherPhotoFiles($folder, true);
 		foreach ($photos as $photo) {
 			$this->photoMapper->deleteByFileId($photo->getId());
@@ -193,7 +205,7 @@ class PhotofilesService {
 	}
 
 	// delete folder photos only if it's not accessible to user anymore
-	public function deleteByFolderIdUserId($folderId, $userId) {
+	public function deleteByFolderIdUserId($folderId, $userId): void {
 		$userFolder = $this->root->getUserFolder($userId);
 		$folders = $userFolder->getById($folderId);
 		if (is_array($folders) and count($folders) === 1) {
@@ -208,7 +220,10 @@ class PhotofilesService {
 
 	/**
 	 * @param $userId
-	 * @return array
+	 *
+	 * @return (bool|int|mixed)[]
+	 *
+	 * @psalm-return array{addJobsRunning: bool, addJobsRemainingForUser: int<0, max>, recentlyAdded: 0|mixed, updateJobsRunning: bool, updateJobsRemainingForUser: int<0, max>, recentlyUpdated: 0|mixed}
 	 */
 	public function getBackgroundJobStatus($userId): array {
 		$add_counter = 0;
@@ -249,7 +264,12 @@ class PhotofilesService {
 		}
 	}
 
-	private function setDirectoriesCoords($userId, $paths, $lats, $lngs) {
+	/**
+	 * @return (int|mixed|null|string|string[])[][]
+	 *
+	 * @psalm-return list{0?: array{path: array<string>|null|string, lat: 0|mixed, lng: 0|mixed, oldLat: mixed|null, oldLng: mixed|null},...}
+	 */
+	private function setDirectoriesCoords($userId, $paths, $lats, $lngs): array {
 		$lat = $lats[0] ?? 0;
 		$lng = $lngs[0] ?? 0;
 		$userFolder = $this->root->getUserFolder($userId);
@@ -280,7 +300,12 @@ class PhotofilesService {
 		return $done;
 	}
 
-	private function setFilesCoords($userId, $paths, $lats, $lngs) {
+	/**
+	 * @return (mixed|null|string|string[])[][]
+	 *
+	 * @psalm-return list<array{lat: mixed, lng: mixed, oldLat: mixed|null, oldLng: mixed|null, path: array<array-key, string>|null|string}>
+	 */
+	private function setFilesCoords($userId, $paths, $lats, $lngs): array {
 		$userFolder = $this->root->getUserFolder($userId);
 		$done = [];
 
@@ -311,7 +336,12 @@ class PhotofilesService {
 		return $done;
 	}
 
-	public function resetPhotosFilesCoords($userId, $paths) {
+	/**
+	 * @return (mixed|null|string|string[])[][]
+	 *
+	 * @psalm-return list<array{lat: null, lng: null, oldLat: mixed|null, oldLng: mixed|null, path: array<array-key, string>|null|string}>
+	 */
+	public function resetPhotosFilesCoords($userId, $paths): array {
 		$userFolder = $this->root->getUserFolder($userId);
 		$done = [];
 
@@ -337,11 +367,11 @@ class PhotofilesService {
 	}
 
 	// avoid adding photo if it already exists in the DB
-	private function addPhoto($photo, $userId) {
+	private function addPhoto(Node $photo, string $userId): void {
 		$this->jobList->add(AddPhotoJob::class, ['photoId' => $photo->getId(), 'userId' => $userId]);
 	}
 
-	public function addPhotoNow($photo, $userId) {
+	public function addPhotoNow(Node $photo, $userId): void {
 		$exif = $this->getExif($photo);
 		if (!is_null($exif)) {
 			// filehooks are triggered several times (2 times for file creation)
@@ -358,7 +388,7 @@ class PhotofilesService {
 	}
 
 
-	private function insertPhoto($photo, $userId, $exif) {
+	private function insertPhoto(Node $photo, string $userId, ExifGeoData $exif): void {
 		$photoEntity = new Geophoto();
 		$photoEntity->setFileId($photo->getId());
 		$photoEntity->setLat(
@@ -375,13 +405,18 @@ class PhotofilesService {
 		$this->photosCache->clear($userId);
 	}
 
-	private function updatePhoto($file, $exif) {
+	private function updatePhoto(Node $file, ExifGeoData $exif): void {
 		$lat = is_numeric($exif->lat) && !is_nan($exif->lat) ? $exif->lat : null;
 		$lng = is_numeric($exif->lng) && !is_nan($exif->lng) ? $exif->lng : null;
 		$this->photoMapper->updateByFileId($file->getId(), $lat, $lng);
 	}
 
-	private function normalizePath($node) {
+	/**
+	 * @return string|string[]
+	 *
+	 * @psalm-return array<string>|string
+	 */
+	private function normalizePath($node): array|string {
 		return str_replace('files', '', $node->getInternalPath());
 	}
 
@@ -391,7 +426,12 @@ class PhotofilesService {
 		return $this->getPhotosListForFolder($folder);
 	}
 
-	private function getPhotosListForFolder($folder) {
+	/**
+	 * @return \stdClass[]
+	 *
+	 * @psalm-return list{0?: \stdClass,...}
+	 */
+	private function getPhotosListForFolder($folder): array {
 		$FilesList = $this->gatherPhotoFiles($folder, false);
 		$notes = [];
 		foreach ($FilesList as $File) {
@@ -403,7 +443,7 @@ class PhotofilesService {
 		return $notes;
 	}
 
-	private function gatherPhotoFiles($folder, $recursive) {
+	private function gatherPhotoFiles(Folder $folder, bool $recursive): array {
 		$notes = [];
 		$nodes = $folder->getDirectoryListing();
 		foreach ($nodes as $node) {
@@ -431,7 +471,7 @@ class PhotofilesService {
 		return $notes;
 	}
 
-	private function isPhoto($file) {
+	private function isPhoto(Node $file): bool {
 		if ($file->getType() !== \OCP\Files\FileInfo::TYPE_FILE) {
 			return false;
 		}
@@ -448,7 +488,7 @@ class PhotofilesService {
 	 * @param $file
 	 * @return ExifGeoData|null
 	 */
-	private function getExif($file) : ?ExifGeoData {
+	private function getExif(File $file): ?ExifGeoData {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 		try {
 			$exif_geo_data = ExifGeoData::get($path);
@@ -465,7 +505,7 @@ class PhotofilesService {
 		return $exif_geo_data;
 	}
 
-	private function resetExifCoords($file) {
+	private function resetExifCoords(File $file): void {
 		$data = new PelDataWindow($file->getContent());
 		$pelJpeg = new PelJpeg($data);
 
@@ -493,7 +533,7 @@ class PhotofilesService {
 		$file->putContent($pelJpeg->getBytes());
 	}
 
-	private function setExifCoords($file, $lat, $lng) {
+	private function setExifCoords(File $file, $lat, $lng): void {
 		$data = new PelDataWindow($file->getContent());
 		$pelJpeg = new PelJpeg($data);
 
@@ -523,7 +563,7 @@ class PhotofilesService {
 		$file->putContent($pelJpeg->getBytes());
 	}
 
-	private function setGeolocation($pelSubIfdGps, $latitudeDegreeDecimal, $longitudeDegreeDecimal) {
+	private function setGeolocation(PelIfd $pelSubIfdGps, $latitudeDegreeDecimal, $longitudeDegreeDecimal): void {
 		$latitudeRef = ($latitudeDegreeDecimal >= 0) ? 'N' : 'S';
 		$latitudeDegreeMinuteSecond
 			= $this->degreeDecimalToDegreeMinuteSecond(abs($latitudeDegreeDecimal));
@@ -553,7 +593,16 @@ class PhotofilesService {
 		));
 	}
 
-	private function degreeDecimalToDegreeMinuteSecond($degreeDecimal) {
+	/**
+	 * @param float|int $degreeDecimal
+	 *
+	 * @psalm-param float|int<0, max> $degreeDecimal
+	 *
+	 * @return (float|mixed)[]
+	 *
+	 * @psalm-return array{degree: float, minute: float, second: mixed}
+	 */
+	private function degreeDecimalToDegreeMinuteSecond(int|float $degreeDecimal): array {
 		$degree = floor($degreeDecimal);
 		$remainder = $degreeDecimal - $degree;
 		$minute = floor($remainder * 60);

@@ -24,7 +24,7 @@ use OCP\IConfig;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 
-class PageController extends Controller {
+final class PageController extends Controller {
 
 	public function __construct(
 		string $appName,
@@ -39,16 +39,17 @@ class PageController extends Controller {
 	}
 
 	/**
-	 * CAUTION: the @Stuff turns off security checks; for this page no admin is
-	 *          required and no CSRF check. If you don't know what CSRF is, read
-	 *          it up in the docs or you might create a security hole. This is
-	 *          basically the only required method to add this exemption, don't
-	 *          add it to any other method if you don't exactly know what it does
 	 *
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
+	 * CAUTION: these attributes turn off security checks; for this page no admin is
+	 * required and no CSRF check. If you don't know what CSRF is, read
+	 * it up in the docs or you might create a security hole. This is
+	 * basically the only required method to add this exemption, don't
+	 * add it to any other method if you don't exactly know what it does
+	 *
 	 * @return TemplateResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function index(): TemplateResponse {
 		$this->eventDispatcher->dispatch(LoadSidebar::class, new LoadSidebar());
 		$this->eventDispatcher->dispatch(LoadViewer::class, new LoadViewer());
@@ -63,9 +64,10 @@ class PageController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
+	 * @return RedirectResponse|TemplateResponse
 	 */
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
 	public function indexMyMap(int $myMapId, MyMapsService $service): TemplateResponse|RedirectResponse {
 		$map = $service->getMyMap($myMapId, $this->userId);
 		if ($map !== null && $map['id'] !== $myMapId) {
@@ -89,20 +91,18 @@ class PageController extends Controller {
 	}
 
 	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 * @param $url
 	 * @return TemplateResponse
 	 */
-	public function openGeoLink($url): TemplateResponse {
+	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
+	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
+	public function openGeoLink(mixed $url): TemplateResponse {
 		return $this->index();
 	}
 
 	/**
-	 * @param $response
-	 * @return void
+	 * @param TemplateResponse $response
 	 */
-	private function addCsp($response): void {
+	private function addCsp(TemplateResponse $response): void {
 		if (class_exists('OCP\AppFramework\Http\ContentSecurityPolicy')) {
 			$csp = new \OCP\AppFramework\Http\ContentSecurityPolicy();
 			// map tiles

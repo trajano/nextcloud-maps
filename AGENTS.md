@@ -71,6 +71,7 @@ This file gives coding agents the minimum project context needed to work safely 
 - Prefer adding or updating tests when changing behavior.
 - Use `tests/Unit/` for isolated PHP logic and controller behavior.
 - Use `tests/Integration/` when the change depends on Nextcloud integration details.
+- Run `composer run cs:fix` when PHP changes need formatting before review or push.
 - If a task only changes documentation, explain what was verified instead of inventing code tests.
 - Before finishing, run the narrowest relevant checks that cover the change and report anything you could not run.
 

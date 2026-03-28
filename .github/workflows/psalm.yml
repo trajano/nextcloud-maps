@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       php-versions: ${{ steps.php.outputs.php-versions }}
-      php-min: ${{ steps.versions.outputs.php-min }}
+      php-min: ${{ steps.php.outputs.php-min }}
       server-versions: ${{ steps.branches.outputs.server-versions }}
     steps:
       - name: Checkout
@@ -41,8 +41,9 @@ jobs:
       - name: Build php version list
         id: php
         run: |
-          php_versions=$(printf '%s\n' '${{ steps.versions.outputs.php-available }}' '8.4' | sort -u | jq -R . | jq -sc .)
+          php_versions=$(printf '%s\n' '${{ steps.versions.outputs.php-available }}' '8.4' | jq -R . | jq -sc 'map(select((split(".")[0] | tonumber) > 8 or ((split(".")[0] | tonumber) == 8 and (split(".")[1] | tonumber) >= 3))) | unique')
           echo "php-versions=${php_versions}" >> $GITHUB_OUTPUT
+          echo "php-min=8.3" >> $GITHUB_OUTPUT
 
   static-analysis:
     runs-on: ubuntu-latest
@@ -87,4 +88,4 @@ jobs:
         run: composer require --dev nextcloud/ocp:dev-${{ matrix.server-version }} --ignore-platform-reqs --with-dependencies
 
       - name: Run coding standards check
-        run: composer run psalm -- --threads=1 --monochrome --no-progress --output-format=github
+        run: composer run psalm -- --threads=1 --monochrome --no-progress --show-info=true --output-format=github

@@ -2,7 +2,7 @@
 
 /**
  * Nextcloud - maps
- *
+ * final  *
  * This file is licensed under the Affero General Public License version 3 or
  * later. See the COPYING file.
  *
@@ -42,8 +42,8 @@ class FileHooks {
 		$this->lockingProvider = $lockingProvider;
 	}
 
-	public function register() {
-		$fileWriteCallback = function (\OCP\Files\Node $node) {
+	public function register(): void {
+		$fileWriteCallback = function (\OCP\Files\Node $node): void {
 			//logger('maps')->debug("Hook postWrite");
 			if ($node->getType() === FileInfo::TYPE_FILE && $this->isUserNode($node) && $node->getSize()) {
 				$path = $node->getPath();
@@ -59,7 +59,7 @@ class FileHooks {
 		};
 		$this->root->listen('\OC\Files', 'postWrite', $fileWriteCallback);
 
-		$fileDeletionCallback = function (\OCP\Files\Node $node) {
+		$fileDeletionCallback = function (\OCP\Files\Node $node): void {
 			//logger('maps')->debug("Hook preDelete");
 			if ($this->isUserNode($node)) {
 				if ($node->getType() === FileInfo::TYPE_FOLDER) {
@@ -112,6 +112,9 @@ class FileHooks {
 		Util::connectHook(\OCP\Share::class, 'pre_unshare', $this, 'preUnShare');
 	}
 
+	/**
+	 * @return void
+	 */
 	public function postShare($params) {
 		//logger('maps')->debug("Hook postShare");
 		if ($params['itemType'] === 'file') {
@@ -137,7 +140,7 @@ class FileHooks {
 		}
 	}
 
-	public function postUnShare($params) {
+	public function postUnShare($params): void {
 		//logger('maps')->debug("Hook postUnShare");
 		if ($params['shareType'] === IShare::TYPE_USER) {
 			if ($params['itemType'] === 'file') {
@@ -149,7 +152,7 @@ class FileHooks {
 		}
 	}
 
-	public function preUnShare($params) {
+	public function preUnShare($params): void {
 		//logger('maps')->debug("Hook preUnShare");
 		if ($params['shareType'] === IShare::TYPE_USER) {
 			if ($params['itemType'] === 'folder') {
@@ -161,7 +164,7 @@ class FileHooks {
 		}
 	}
 
-	public function restore($params) {
+	public function restore($params): void {
 		$node = $this->getNodeForPath($params['filePath']);
 		if ($this->isUserNode($node)) {
 			if ($node->getType() === FileInfo::TYPE_FOLDER) {
