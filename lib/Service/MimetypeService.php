@@ -1,10 +1,10 @@
-final <?php
+<?php
 
 namespace OCA\Maps\Service;
 
 use OCP\Files\IMimeTypeLoader;
 
-class MimetypeService {
+final class MimetypeService {
 
 	public const CUSTOM_MIMETYPEMAPPING = 'mimetypemapping.json';
 
