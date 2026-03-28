@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -29,7 +29,7 @@ use OCP\IUserManager;
 use OCP\Share\Exceptions\ShareNotFound;
 use OCP\Share\IManager as ShareManager;
 
-class PublicPhotosController extends PublicPageController {
+final class PublicPhotosController extends PublicPageController {
 
 	public function __construct(
 		string $appName,
