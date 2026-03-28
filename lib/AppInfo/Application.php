@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * ownCloud - maps
  *
@@ -12,6 +14,7 @@
 
 namespace OCA\Maps\AppInfo;
 
+use Closure;
 use OCA\DAV\Events\CardCreatedEvent;
 use OCA\DAV\Events\CardDeletedEvent;
 use OCA\DAV\Events\CardUpdatedEvent;
@@ -29,12 +32,13 @@ use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
+use OCP\Files\IRootFolder;
+use OCP\Lock\ILockingProvider;
 use OCP\AppFramework\Http\EmptyFeaturePolicy;
 use OCP\EventDispatcher\IEventDispatcher;
-use OCP\IServerContainer;
 use OCP\Security\FeaturePolicy\AddFeaturePolicyEvent;
 
-class Application extends App implements IBootstrap {
+final class Application extends App implements IBootstrap {
 	public const APP_ID = 'maps';
 
 	public function __construct(array $urlParams = []) {
@@ -71,23 +75,27 @@ class Application extends App implements IBootstrap {
 	}
 
 	public function boot(IBootContext $context): void {
-		// ... boot logic goes here ...
-		$context->getAppContainer()->registerService('FileHooks', function ($c) {
-			return new FileHooks(
-				$c->query(IServerContainer::class)->getRootFolder(),
-				\OCP\Server::get(PhotofilesService::class),
-				\OCP\Server::get(TracksService::class),
-				$c->query('AppName'),
-				$c->query(IServerContainer::class)->getLockingProvider()
-			);
-		});
-
-		$context->getAppContainer()->query('FileHooks')->register();
-
+		$context->injectFn(Closure::fromCallable([$this, 'registerFileHooks']));
 		$this->registerFeaturePolicy();
 	}
 
-	private function registerFeaturePolicy() {
+	private function registerFileHooks(
+		IRootFolder $rootFolder,
+		PhotofilesService $photofilesService,
+		TracksService $tracksService,
+		ILockingProvider $lockingProvider,
+	): void {
+		$fileHooks = new FileHooks(
+			$rootFolder,
+			$photofilesService,
+			$tracksService,
+			self::APP_ID,
+			$lockingProvider
+		);
+		$fileHooks->register();
+	}
+
+	private function registerFeaturePolicy(): void {
 		$dispatcher = $this->getContainer()->getServer()->get(IEventDispatcher::class);
 
 		$dispatcher->addListener(AddFeaturePolicyEvent::class, function (AddFeaturePolicyEvent $e) {
