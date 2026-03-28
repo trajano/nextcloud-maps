@@ -30,15 +30,15 @@ use Sabre\VObject\Property\Text;
 use Sabre\VObject\Reader;
 
 final class ContactsController extends Controller {
-	private $userId;
-	private $contactsManager;
-	private $addressService;
-	private $dbconnection;
-	private $cdBackend;
-	private $avatarManager;
-	private $root;
-	private $urlGenerator;
-	private $geoDistanceMax; // Max distance in meters to consider that 2 addresses are the same location
+	private string $userId;
+	private IManager $contactsManager;
+	private AddressService $addressService;
+	private IDBConnection $dbconnection;
+	private CardDavBackend $cdBackend;
+	private IAvatarManager $avatarManager;
+	private IRootFolder $root;
+	private IURLGenerator $urlGenerator;
+	private int $geoDistanceMax; // Max distance in meters to consider that 2 addresses are the same location
 
 	/**
 	 * @param $AppName
@@ -52,12 +52,12 @@ final class ContactsController extends Controller {
 	 * @param IRootFolder $root
 	 */
 	public function __construct(
-		$AppName,
+		string $AppName,
 		IRequest $request,
 		IDBConnection $dbconnection,
 		IManager $contactsManager,
 		AddressService $addressService,
-		$UserId,
+		string $UserId,
 		CardDavBackend $cdBackend,
 		IAvatarManager $avatarManager,
 		IRootFolder $root,
@@ -83,7 +83,7 @@ final class ContactsController extends Controller {
 	 *
 	 * @psalm-return non-empty-list<float>
 	 */
-	private function geoAsFloatArray($geo): array {
+	private function geoAsFloatArray(string $geo): array {
 		$res = array_map(function ($value) {return floatval($value);}, explode(';', $geo));
 		return $res;
 	}
@@ -126,8 +126,10 @@ final class ContactsController extends Controller {
 	 * @param array $coordsA GPS coordinates of first point
 	 * @param array $coordsB GPS coordinates of second point
 	 * @return float Distance in meters between these two points
+	 * @psalm-param list{0: float, 1: float} $coordsA
+	 * @psalm-param list{0: float, 1: float} $coordsB
 	 */
-	private function getDistance(array $coordsA, array $coordsB) {
+	private function getDistance(array $coordsA, array $coordsB): float {
 		if (empty($coordsA) || empty($coordsB)) {
 			return 9E999;
 		}
@@ -159,7 +161,7 @@ final class ContactsController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200, array<array>, array<never, never>>
 	 */
-	public function getContacts($myMapId = null): DataResponse {
+	public function getContacts(int|string|null $myMapId = null): DataResponse {
 		if (is_null($myMapId) || $myMapId === '') {
 			$contacts = $this->contactsManager->search('', ['GEO', 'ADR'], ['types' => false]);
 			$addressBooks = $this->contactsManager->getUserAddressBooks();
@@ -337,7 +339,7 @@ final class ContactsController extends Controller {
 	 * @param $addressBookUri
 	 * @return string
 	 */
-	private function directUrlToContact(string $contactUid, $addressBookUri) {
+	private function directUrlToContact(string $contactUid, string $addressBookUri): string {
 		return $this->urlGenerator->getAbsoluteURL(
 			$this->urlGenerator->linkToRoute('contacts.contacts.direct', [
 				'contact' => $contactUid . '~' . $addressBookUri
@@ -404,7 +406,7 @@ final class ContactsController extends Controller {
 	 */
 	private function N2FN(string $n): string|null {
 		if ($n) {
-			$spl = explode($n, ';');
+			$spl = explode(';', $n);
 			if (count($spl) >= 4) {
 				return $spl[3] . ' ' . $spl[1] . ' ' . $spl[0];
 			} else {
@@ -788,7 +790,7 @@ final class ContactsController extends Controller {
 	 *
 	 * @psalm-return DataResponse<200|400, 'DELETED'|'FAILED'|'READONLY', array<never, never>>
 	 */
-	public function deleteContactAddress($bookid, $uri, $uid, $adr, $geo, $fileId = null, $myMapId = null): DataResponse {
+	public function deleteContactAddress(string $bookid, string $uri, string $uid, string $adr, string $geo, ?int $fileId = null, ?int $myMapId = null): DataResponse {
 
 		// vcard
 		$card = $this->cdBackend->getContact($bookid, $uri);
