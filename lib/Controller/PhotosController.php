@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -26,7 +26,7 @@ use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
 use OCP\IRequest;
 
-class PhotosController extends Controller {
+final class PhotosController extends Controller {
 	private $userId;
 	private $geophotoService;
 	private $photofilesService;
