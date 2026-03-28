@@ -144,7 +144,7 @@ final class PublicFavoritePageController extends PublicShareController {
 	 *
 	 * @return void
 	 *
-	 * @psalm-param PublicTemplateResponse<array, 200> $response
+	 * @psalm-param PublicTemplateResponse<array<string, mixed>, 200> $response
 	 */
 	private function addCsp(PublicTemplateResponse $response): void {
 		if (class_exists('OCP\AppFramework\Http\ContentSecurityPolicy')) {

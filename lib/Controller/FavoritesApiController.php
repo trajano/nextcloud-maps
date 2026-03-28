@@ -104,8 +104,6 @@ final class FavoritesApiController extends ApiController {
 	 * @param $extensions
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
@@ -130,8 +128,6 @@ final class FavoritesApiController extends ApiController {
 	 * @param $extensions
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
@@ -157,8 +153,6 @@ final class FavoritesApiController extends ApiController {
 	 * @param $id
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]

@@ -92,7 +92,7 @@ class GeophotoMapper extends QBMapper {
 	 *
 	 * @throws \OCP\DB\Exception
 	 *
-	 * @psalm-return list<OCA\Maps\DB\Geophoto>
+	 * @psalm-return list<Geophoto>
 	 */
 	public function findAll($userId, $limit = null, $offset = null): array {
 		$qb = $this->db->getQueryBuilder();
@@ -124,7 +124,7 @@ class GeophotoMapper extends QBMapper {
 	 *
 	 * @throws \OCP\DB\Exception
 	 *
-	 * @psalm-return list<OCA\Maps\DB\Geophoto>
+	 * @psalm-return list<Geophoto>
 	 */
 	public function findAllNonLocalized($userId, $limit = null, $offset = null): array {
 		$qb = $this->db->getQueryBuilder();

@@ -201,8 +201,6 @@ final class PublicFavoritesController extends PublicPageController {
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function addFavorite(?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions): DataResponse {
@@ -276,8 +274,6 @@ final class PublicFavoritesController extends PublicPageController {
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws \OCP\Files\InvalidPathException
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<400, string, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function editFavorite(int $id, ?string $name, float $lat, float $lng, ?string $category, ?string $comment, ?string $extensions): DataResponse {
@@ -407,8 +403,6 @@ final class PublicFavoritesController extends PublicPageController {
 	 *
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\PublicPage]
 	public function getSharedCategories(): DataResponse {

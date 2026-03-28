@@ -93,8 +93,6 @@ final class DevicesController extends Controller {
 	 * @param ?int $myMapId
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, list<value-of<array>>, array<never, never>>|DataResponse<404, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevices($tokens = null, $myMapId = null): DataResponse {
@@ -130,8 +128,6 @@ final class DevicesController extends Controller {
 	 * @param string[] $tokens
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, list<value-of<array>>, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevicesByTokens(array $tokens): DataResponse {
@@ -145,8 +141,6 @@ final class DevicesController extends Controller {
 	 * @param int $pruneBefore
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getDevicePoints($id, ?int $pruneBefore = 0, ?int $limit = 10000, ?int $offset = 0, ?array $tokens = null): DataResponse {
@@ -169,8 +163,6 @@ final class DevicesController extends Controller {
 	 * @param null $accuracy
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, array{deviceId: mixed, pointId: mixed}, array<never, never>>|DataResponse<400, 'Invalid values', array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addDevicePoint($lat, $lng, $timestamp = null, $user_agent = null, $altitude = null, $battery = null, $accuracy = null): DataResponse {
@@ -201,8 +193,6 @@ final class DevicesController extends Controller {
 	 * @param $name
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function editDevice($id, $color, $name): DataResponse {
@@ -227,8 +217,6 @@ final class DevicesController extends Controller {
 	 * @param $id
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteDevice($id): DataResponse {
@@ -251,8 +239,6 @@ final class DevicesController extends Controller {
 	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
-	 *
-	 * @psalm-return DataResponse<200, string, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function exportDevices($deviceIdList, $begin, $end, bool $all = false): DataResponse {
@@ -311,8 +297,6 @@ final class DevicesController extends Controller {
 	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
-	 *
-	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function importDevices($path): DataResponse {
@@ -366,8 +350,6 @@ final class DevicesController extends Controller {
 	 *
 	 * @throws \OCP\Files\NotPermittedException
 	 * @throws \OC\User\NoUserException
-	 *
-	 * @psalm-return DataResponse<200, array<never, never>|mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getSharedDevices(?int $myMapId = null): DataResponse {
@@ -389,8 +371,6 @@ final class DevicesController extends Controller {
 	 * @param int $timestampTo
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200|400|500, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function shareDevice(int $id, int $timestampFrom, int $timestampTo): DataResponse {
@@ -416,8 +396,6 @@ final class DevicesController extends Controller {
 	 *
 	 * @throws NotPermittedException
 	 * @throws NotFoundException
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function removeDeviceShare(int $token): DataResponse {
@@ -442,8 +420,6 @@ final class DevicesController extends Controller {
 	 * @return DataResponse
 	 *
 	 * @throws NotFoundException
-	 *
-	 * @psalm-return DataResponse<200, 'Done', array<never, never>>|DataResponse<200|404, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function addSharedDeviceToMap(string $token, $targetMapId): DataResponse {
@@ -473,9 +449,6 @@ final class DevicesController extends Controller {
 		return new DataResponse('Done');
 	}
 
-	/**
-	 * @psalm-return DataResponse<200|500, 'Done'|'Failed', array<never, never>>|DataResponse<404, mixed, array<never, never>>
-	 */
 	public function removeSharedDeviceFromMap(string $token, int $myMapId): DataResponse {
 		$folders = $this->userfolder->getById($myMapId);
 		$folder = array_shift($folders);

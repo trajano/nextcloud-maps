@@ -35,7 +35,7 @@ jobs:
       - name: Build php-cs matrix
         id: matrix
         run: |
-          php_versions=$(printf '%s\n' '${{ steps.versions.outputs.php-min }}' '8.2' '8.4' | sort -u | jq -R . | jq -sc .)
+          php_versions=$(printf '%s\n' '${{ steps.versions.outputs.php-min }}' '8.4' | sort -u | jq -R . | jq -sc .)
           echo "php-versions=${php_versions}" >> $GITHUB_OUTPUT
 
   lint:

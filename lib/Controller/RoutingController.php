@@ -85,8 +85,6 @@ final class RoutingController extends Controller {
 	 *
 	 * @throws \OCP\Files\NotFoundException
 	 * @throws \OCP\Files\NotPermittedException
-	 *
-	 * @psalm-return DataResponse<200|400, mixed, array<never, never>>|DataResponse<404, 'myMaps Folder not found', array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function exportRoute($type, $coords, $name, $totDist, $totTime, $myMapId = null): DataResponse {

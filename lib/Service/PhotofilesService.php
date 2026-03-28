@@ -21,6 +21,7 @@ use OCA\Maps\Helper\ExifDataNoLocationException;
 use OCA\Maps\Helper\ExifGeoData;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\BackgroundJob\IJobList;
+use OCP\Files\File;
 use OCP\Files\FileInfo;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
@@ -152,7 +153,7 @@ final class PhotofilesService {
 	}
 
 	// add all photos of a folder taking care of shared accesses
-	public function addByFolder(Node $folder): void {
+	public function addByFolder(Folder $folder): void {
 		$photos = $this->gatherPhotoFiles($folder, true);
 		foreach ($photos as $photo) {
 			$this->addByFile($photo);
@@ -196,7 +197,7 @@ final class PhotofilesService {
 	}
 
 
-	public function deleteByFolder(Node $folder): void {
+	public function deleteByFolder(Folder $folder): void {
 		$photos = $this->gatherPhotoFiles($folder, true);
 		foreach ($photos as $photo) {
 			$this->photoMapper->deleteByFileId($photo->getId());
@@ -442,7 +443,7 @@ final class PhotofilesService {
 		return $notes;
 	}
 
-	private function gatherPhotoFiles(Node $folder, bool $recursive): array {
+	private function gatherPhotoFiles(Folder $folder, bool $recursive): array {
 		$notes = [];
 		$nodes = $folder->getDirectoryListing();
 		foreach ($nodes as $node) {
@@ -487,7 +488,7 @@ final class PhotofilesService {
 	 * @param $file
 	 * @return ExifGeoData|null
 	 */
-	private function getExif(Node $file) : ?ExifGeoData {
+	private function getExif(File $file): ?ExifGeoData {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 		try {
 			$exif_geo_data = ExifGeoData::get($path);
@@ -504,7 +505,7 @@ final class PhotofilesService {
 		return $exif_geo_data;
 	}
 
-	private function resetExifCoords($file): void {
+	private function resetExifCoords(File $file): void {
 		$data = new PelDataWindow($file->getContent());
 		$pelJpeg = new PelJpeg($data);
 
@@ -532,7 +533,7 @@ final class PhotofilesService {
 		$file->putContent($pelJpeg->getBytes());
 	}
 
-	private function setExifCoords($file, $lat, $lng): void {
+	private function setExifCoords(File $file, $lat, $lng): void {
 		$data = new PelDataWindow($file->getContent());
 		$pelJpeg = new PelJpeg($data);
 

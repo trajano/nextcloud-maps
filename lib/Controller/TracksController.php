@@ -74,8 +74,6 @@ final class TracksController extends Controller {
 	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getTracks($myMapId = null): DataResponse {
@@ -91,7 +89,7 @@ final class TracksController extends Controller {
 
 	/**
 	 *
-	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, mixed, array<never, never>>
+	 * @return DataResponse
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getTrackContentByFileId($id): DataResponse {
@@ -129,8 +127,6 @@ final class TracksController extends Controller {
 	 *
 	 * @throws \OCP\Files\InvalidPathException
 	 * @throws \OCP\Files\NotFoundException
-	 *
-	 * @psalm-return DataResponse<200, array{metadata: mixed, content: string}, array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getTrackFileContent($id): DataResponse {
@@ -168,8 +164,6 @@ final class TracksController extends Controller {
 	 * @param $etag
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, 'EDITED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function editTrack($id, $color, $metadata, $etag): DataResponse {
@@ -187,8 +181,6 @@ final class TracksController extends Controller {
 	 * @param $id
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, 'DELETED', array<never, never>>|DataResponse<400, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function deleteTrack($id): DataResponse {

@@ -372,7 +372,7 @@ final class GeophotoService {
 	/**
 	 * @return \SimpleXMLElement[]
 	 *
-	 * @psalm-return list<SimpleXMLElement>
+	 * @psalm-return list<\SimpleXMLElement>
 	 */
 	private function getTracksFromGPX(string $content): array {
 		$tracks = [];

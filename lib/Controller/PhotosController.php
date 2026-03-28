@@ -57,8 +57,6 @@ final class PhotosController extends Controller {
 	 * @throws NoUserException
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
@@ -89,8 +87,6 @@ final class PhotosController extends Controller {
 	 * @throws NoUserException
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	#[\OCP\AppFramework\Http\Attribute\NoCSRFRequired]
@@ -121,8 +117,6 @@ final class PhotosController extends Controller {
 	 * @throws NotFoundException
 	 * @throws NotPermittedException
 	 * @throws InvalidPathException
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>|DataResponse<200|400, array<never, never>, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function placePhotos($paths, $lats, $lngs, bool $directory = false, $myMapId = null, bool $relative = false): DataResponse {
@@ -164,8 +158,6 @@ final class PhotosController extends Controller {
 	 * @param $paths
 	 *
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, array<never, never>|mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function resetPhotosCoords($paths, $myMapId = null): DataResponse {
@@ -205,8 +197,6 @@ final class PhotosController extends Controller {
 
 	/**
 	 * @return DataResponse
-	 *
-	 * @psalm-return DataResponse<200, mixed, array<never, never>>
 	 */
 	#[\OCP\AppFramework\Http\Attribute\NoAdminRequired]
 	public function getBackgroundJobStatus(): DataResponse {

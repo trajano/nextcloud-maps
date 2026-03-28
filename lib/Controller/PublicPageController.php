@@ -168,7 +168,7 @@ class PublicPageController extends AuthPublicShareController {
 	 *
 	 * @return PublicTemplateResponse
 	 *
-	 * @psalm-return PublicTemplateResponse<array<never, never>, 200>
+	 * @psalm-return PublicTemplateResponse<array<string, mixed>, 200>
 	 */
 	protected function showAuthFailed(): PublicTemplateResponse {
 		$templateParameters = ['share' => $this->share, 'wrongpw' => true];
@@ -192,7 +192,7 @@ class PublicPageController extends AuthPublicShareController {
 	 *
 	 * @return PublicTemplateResponse
 	 *
-	 * @psalm-return PublicTemplateResponse<array<never, never>, 200>
+	 * @psalm-return PublicTemplateResponse<array<string, mixed>, 200>
 	 */
 	protected function showIdentificationResult(bool $success = false): PublicTemplateResponse {
 		$templateParameters = ['share' => $this->share, 'identityOk' => $success];
@@ -216,7 +216,7 @@ class PublicPageController extends AuthPublicShareController {
 	 *
 	 * @return void
 	 *
-	 * @psalm-param PublicTemplateResponse<array, 200> $response
+	 * @psalm-param PublicTemplateResponse<array<string, mixed>, 200> $response
 	 */
 	private function addCsp(PublicTemplateResponse $response): void {
 		if (class_exists('OCP\AppFramework\Http\ContentSecurityPolicy')) {

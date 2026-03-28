@@ -16,6 +16,7 @@ use OC\Files\Search\SearchBinaryOperator;
 use OC\Files\Search\SearchComparison;
 use OC\Files\Search\SearchQuery;
 use OCP\DB\QueryBuilder\IQueryBuilder;
+use OCP\Files\File;
 use OCP\Files\FileInfo;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
@@ -126,14 +127,14 @@ final class TracksService {
 	}
 
 	// add all tracks of a folder taking care of shared accesses
-	public function safeAddByFolder(Node $folder): void {
+	public function safeAddByFolder(Folder $folder): void {
 		$tracks = $this->gatherTrackFiles($folder, true);
 		foreach ($tracks as $track) {
 			$this->safeAddByFile($track);
 		}
 	}
 
-	public function addByFolder(Node $folder): void {
+	public function addByFolder(Folder $folder): void {
 		$tracks = $this->gatherTrackFiles($folder, true);
 		foreach ($tracks as $track) {
 			$this->addTrackToDB($folder->getOwner()->getUID(), $track->getId(), $track);
@@ -154,7 +155,7 @@ final class TracksService {
 		$this->deleteByFileId($file->getId());
 	}
 
-	public function deleteByFolder(Node $folder): void {
+	public function deleteByFolder(Folder $folder): void {
 		$tracks = $this->gatherTrackFiles($folder, true);
 		foreach ($tracks as $track) {
 			$this->deleteByFileId($track->getId());
@@ -174,7 +175,7 @@ final class TracksService {
 		}
 	}
 
-	private function gatherTrackFiles(Node $folder, bool $recursive): array {
+	private function gatherTrackFiles(Folder $folder, bool $recursive): array {
 		$notes = [];
 		$nodes = $folder->getDirectoryListing();
 		foreach ($nodes as $node) {
@@ -529,7 +530,7 @@ final class TracksService {
 		$qb->executeStatement();
 	}
 
-	public function generateTrackMetadata($file): ?string {
+	public function generateTrackMetadata(File $file): ?string {
 		$DISTANCE_BETWEEN_SHORT_POINTS = 300;
 		$STOPPED_SPEED_THRESHOLD = 0.9;
 

@@ -89,7 +89,7 @@ class FavoriteShareMapper extends QBMapper {
 	 *
 	 * @return FavoriteShare[]
 	 *
-	 * @psalm-return list<OCA\Maps\DB\FavoriteShare>
+	 * @psalm-return list<FavoriteShare>
 	 */
 	public function findAllByOwner($owner): array {
 		$qb = $this->db->getQueryBuilder();

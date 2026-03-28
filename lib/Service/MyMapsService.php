@@ -15,6 +15,7 @@ namespace OCA\Maps\Service;
 use OC\Files\Search\SearchComparison;
 use OC\Files\Search\SearchQuery;
 use OC\User\NoUserException;
+use OCP\Files\File;
 use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
@@ -92,7 +93,7 @@ final class MyMapsService {
 	 *
 	 * @psalm-return array{id: mixed, name: mixed, color: mixed|null, path: mixed, isShareable: mixed, isDeletable: mixed, isCreatable: mixed, isUpdateable: mixed, isReadable: mixed, fileInfo: array{id: mixed, name: '', basename: ''|mixed, filename: mixed, etag: mixed, permissions: mixed, type: mixed, mime: mixed, lastmod: mixed, path: mixed, sharePermissions: mixed}}
 	 */
-	private function node2MyMap(\OCP\Files\Node $node, Folder $userFolder):array {
+	private function node2MyMap(File $node, Folder $userFolder): array {
 		$mapData = json_decode($node->getContent(), true);
 		if (isset($mapData['name'])) {
 			$name = $mapData['name'];

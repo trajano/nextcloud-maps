@@ -16,6 +16,7 @@
 namespace OCA\Maps\Service;
 
 use OC\Archive\ZIP;
+use OCP\Files\File;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use OCP\IL10N;
@@ -673,7 +674,7 @@ final class FavoritesService {
 		fwrite($fileHandler, $gpxEnd);
 	}
 
-	public function importFavorites(string $userId, \OCP\Files\Node $file) {
+	public function importFavorites(string $userId, File $file) {
 		$lowerFileName = strtolower($file->getName());
 		if ($this->endswith($lowerFileName, '.gpx')) {
 			return $this->importFavoritesFromGpx($userId, $file);
@@ -688,7 +689,7 @@ final class FavoritesService {
 		}
 	}
 
-	public function importFavoritesFromKmz($userId, $file) {
+	public function importFavoritesFromKmz($userId, File $file) {
 		$path = $file->getStorage()->getLocalFile($file->getInternalPath());
 		$name = $file->getName();
 		$zf = new ZIP($path);

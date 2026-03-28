@@ -74,7 +74,7 @@ class DeviceShareMapper extends QBMapper {
 	 *
 	 * @throws DoesNotExistException
 	 *
-	 * @psalm-return list<OCA\Maps\DB\DeviceShare>
+	 * @psalm-return list<DeviceShare>
 	 */
 	public function findByTokens($tokens): array {
 		$qb = $this->db->getQueryBuilder();
@@ -116,7 +116,7 @@ class DeviceShareMapper extends QBMapper {
 	 *
 	 * @throws DoesNotExistException
 	 *
-	 * @psalm-return list<OCA\Maps\DB\DeviceShare>
+	 * @psalm-return list<DeviceShare>
 	 */
 	public function findByDeviceId($deviceId): array {
 		$qb = $this->db->getQueryBuilder();
@@ -135,7 +135,7 @@ class DeviceShareMapper extends QBMapper {
 	 *
 	 * @return DeviceShare[]
 	 *
-	 * @psalm-return list<OCA\Maps\DB\DeviceShare>
+	 * @psalm-return list<DeviceShare>
 	 */
 	public function findByDeviceIds($deviceIds): array {
 		$qb = $this->db->getQueryBuilder();
