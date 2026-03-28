@@ -1,0 +1,13 @@
+name: Validate Commits
+
+on:
+  pull_request:
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint commits
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: .commitlintrc.yml
