@@ -1,4 +1,4 @@
-final <?php
+<?php
 
 /**
  * Nextcloud - maps
@@ -29,7 +29,7 @@ use OCP\IURLGenerator;
 use Sabre\VObject\Property\Text;
 use Sabre\VObject\Reader;
 
-class ContactsController extends Controller {
+final class ContactsController extends Controller {
 	private $userId;
 	private $contactsManager;
 	private $addressService;
