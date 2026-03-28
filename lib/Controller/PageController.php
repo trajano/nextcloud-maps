@@ -51,8 +51,6 @@ final class PageController extends Controller {
 	 * @NoCSRFRequired
 	 *
 	 * @return TemplateResponse
-	 *
-	 * @psalm-return TemplateResponse<200, array<never, never>>
 	 */
 	public function index(): TemplateResponse {
 		$this->eventDispatcher->dispatch(LoadSidebar::class, new LoadSidebar());
@@ -73,8 +71,6 @@ final class PageController extends Controller {
 	 * @NoCSRFRequired
 	 *
 	 * @return RedirectResponse|TemplateResponse
-	 *
-	 * @psalm-return RedirectResponse<303, array<never, never>>|TemplateResponse<200, array<never, never>>
 	 */
 	public function indexMyMap(int $myMapId, MyMapsService $service): TemplateResponse|RedirectResponse|RedirectResponse {
 		$map = $service->getMyMap($myMapId, $this->userId);
@@ -101,19 +97,14 @@ final class PageController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
-	 * @param $url
 	 * @return TemplateResponse
 	 */
-	public function openGeoLink($url): TemplateResponse {
+	public function openGeoLink(mixed $url): TemplateResponse {
 		return $this->index();
 	}
 
 	/**
-	 * @param $response
-	 *
-	 * @return void
-	 *
-	 * @psalm-param TemplateResponse<200, array> $response
+	 * @param TemplateResponse $response
 	 */
 	private function addCsp(TemplateResponse $response): void {
 		if (class_exists('OCP\AppFramework\Http\ContentSecurityPolicy')) {
